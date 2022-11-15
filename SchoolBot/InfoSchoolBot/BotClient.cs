@@ -20,32 +20,42 @@ public class BotClient
         CancellationToken cancellationToken)
     {
         Console.WriteLine();
-        Console.WriteLine(JsonConvert.SerializeObject(update.Type));
+        Console.Write($"User: {JsonConvert.SerializeObject(update.Message?.From)}, ");
+        Console.WriteLine($"Type of message: {JsonConvert.SerializeObject(update.Type)}");
         switch (update.Type)
         {
             case UpdateType.CallbackQuery:
             {
-                var pressedButtonData = update.CallbackQuery?.Data;
+                var pressedButtonData =
+                    update.CallbackQuery?.Data ?? throw new ArgumentException("Nobody pressed the button");
+
                 Console.WriteLine($"Pressed button = {pressedButtonData}");
 
-                if (MealTypeExtensions.ContainsCallBack(pressedButtonData))
+                if (MealTypeExtensions.ContainsButton(pressedButtonData))
                 {
                     await botClient.SendTextMessageAsync(
                         chatId: update.CallbackQuery?.Message?.Chat.Id ??
                                 throw new InvalidOperationException("Chat.Id was null"),
-                        pressedButtonData,
+                        text: pressedButtonData,
                         cancellationToken: cancellationToken);
                     break;
                 }
 
 
-                if (update.CallbackQuery?.Message != null)
+                // Здесь надо запомнить pressedButtonData - какой день выбрал пользователь
+                if (DaysOfWeekExtensions.ContainsButton(pressedButtonData))
+                {
                     await botClient.EditMessageReplyMarkupAsync(
                         chatId: update.CallbackQuery?.Message?.Chat.Id ??
                                 throw new InvalidOperationException("Chat.Id was null"),
                         messageId: update.CallbackQuery.Message.MessageId,
                         cancellationToken: cancellationToken,
                         replyMarkup: GetInlineKeyboardWithTimeOfMeal());
+
+                    break;
+                }
+
+
                 break;
             }
             case UpdateType.Message:
@@ -87,10 +97,7 @@ public class BotClient
         Console.WriteLine("Запущен бот " + Bot.GetMeAsync().Result.FirstName);
 
         var cancellationToken = new CancellationTokenSource().Token;
-        var receiverOptions = new ReceiverOptions
-        {
-            AllowedUpdates = { }, // receive all update types
-        };
+        var receiverOptions = new ReceiverOptions();
         Bot.StartReceiving(
             HandleUpdateAsync,
             HandleErrorAsync,
@@ -133,10 +140,10 @@ public class BotClient
                 InlineKeyboardButton.WithCallbackData(Breakfast.GetDescription()),
                 InlineKeyboardButton.WithCallbackData(Lunch.GetDescription())
             },
-            new[]
+            /*new[]
             {
                 InlineKeyboardButton.WithCallbackData(Buffet.GetDescription()),
-            },
+            },*/
         });
 
         return inlineKeyboard;

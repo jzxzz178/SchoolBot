@@ -22,25 +22,26 @@ public static class EnumHelper
             throw new ArgumentException("Еhe attribute is not set above the Enum");
         return attribute.Description;
     }
+}
 
-    // в идеале, надо перенести MealTypeExtensions.ContainsCallBack в этот класс,
-    // но как это сделать, я понятия не имею
+// в идеале, надо перенести MealTypeExtensions.ContainsCallBack в этот класс,
+// но как это сделать, я понятия не имею
 
-
-    /*public static bool ContainsCallBackQuery<T>(this T enumName, string? callBackQuery) 
-        where T : Enum
+/*public static class EnumExtensions
+{
+    public static bool ContainsCallBackQuery(this Enum enumName, string? callBackQuery) 
     {
-        if (!typeof(T).IsEnum)
-            throw new ArgumentException($"{typeof(T)} is not Enum");
+        if (!enumName.GetType().IsEnum)
+            throw new ArgumentException($"{enumName} is not Enum");
 
         if (callBackQuery == null)
             throw new ArgumentException("Callback is null");
         
 
-        var descriptions = typeof(T).GetValues(typeof(enumName)).Cast<MealType>()
+        var descriptions = Enum.GetValues(enumName.GetType()).Cast<MealType>()
             .Select(val => val.GetDescription())
             .ToArray();
         
-        return false;
-    }*/
-}
+        return descriptions.Contains(callBackQuery);
+    }
+}*/

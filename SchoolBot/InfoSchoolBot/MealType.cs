@@ -6,20 +6,20 @@ public enum MealType
 {
     [Description("Завтрак")] Breakfast,
     [Description("Обед")] Lunch,
-    [Description("Буфет")] Buffet
+    // [Description("Буфет")] Buffet
 }
 
 public static class MealTypeExtensions
 {
-    private static string[] descriptions = Enum.GetValues(typeof(MealType)).Cast<MealType>()
+    private static readonly string[] Descriptions = Enum.GetValues(typeof(MealType)).Cast<MealType>()
         .Select(val => val.GetDescription())
         .ToArray();
 
-    public static bool ContainsCallBack(string? callBackQuery)
+    public static bool ContainsButton(string? pressedButtonData)
     {
-        if (callBackQuery == null)
+        if (pressedButtonData == null)
             throw new ArgumentException("Callback data is null");
 
-        return descriptions.Contains(callBackQuery);
+        return Descriptions.Contains(pressedButtonData);
     }
 }
