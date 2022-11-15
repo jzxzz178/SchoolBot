@@ -15,14 +15,33 @@ public class BotClient
 {
     private static readonly ITelegramBotClient Bot =
         new TelegramBotClient("5735097045:AAGyp2lMa72zKg2PTkLke-bFI7DS7zpu7xI");
+    
+    
+    public static void StartBot()
+    {
+        Console.WriteLine("Запущен бот " + Bot.GetMeAsync().Result.FirstName);
+
+        var cancellationToken = new CancellationTokenSource().Token;
+        var receiverOptions = new ReceiverOptions();
+        Bot.StartReceiving(
+            HandleUpdateAsync,
+            HandleErrorAsync,
+            receiverOptions,
+            cancellationToken
+        );
+        Console.ReadLine();
+    }
+    
 
     private const string BackButton = "Назад   ◀️";
 
     private static async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update,
         CancellationToken cancellationToken)
     {
+        //var 
+
         Console.WriteLine();
-        Console.WriteLine($"User: {JsonConvert.SerializeObject(update.Message?.Chat.Username)}, ");
+        Console.WriteLine($"User: {JsonConvert.SerializeObject(update.Message?.Chat)}, ");
         Console.WriteLine($"Type of request: {JsonConvert.SerializeObject(update.Type)}");
 
         switch (update.Type)
@@ -83,7 +102,7 @@ public class BotClient
                         cancellationToken: cancellationToken);
                 }
 
- 
+
                 break;
             }
             case UpdateType.Message:
@@ -136,20 +155,6 @@ public class BotClient
         return Task.CompletedTask;
     }
 
-    public static void StartBot()
-    {
-        Console.WriteLine("Запущен бот " + Bot.GetMeAsync().Result.FirstName);
-
-        var cancellationToken = new CancellationTokenSource().Token;
-        var receiverOptions = new ReceiverOptions();
-        Bot.StartReceiving(
-            HandleUpdateAsync,
-            HandleErrorAsync,
-            receiverOptions,
-            cancellationToken
-        );
-        Console.ReadLine();
-    }
 
     private static ReplyKeyboardMarkup GetReplyKeyboardWithSchedule()
     {
