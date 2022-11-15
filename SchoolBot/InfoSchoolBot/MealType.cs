@@ -11,15 +11,15 @@ public enum MealType
 
 public static class MealTypeExtensions
 {
+    private static string[] descriptions = Enum.GetValues(typeof(MealType)).Cast<MealType>()
+        .Select(val => val.GetDescription())
+        .ToArray();
+
     public static bool ContainsCallBack(string? callBackQuery)
     {
-        if (callBackQuery == null) 
-            throw new ArgumentException("Callback is null");
-        
-        var a = typeof(MealType).GetFields();
-        var b = a.Where(field => field.GetCustomAttributes(true).OfType<DescriptionAttribute>().Count() != 0);
-        var c = b.Select(field => field.GetDescription());
-        var d = c.Contains(callBackQuery);
-        return d;
+        if (callBackQuery == null)
+            throw new ArgumentException("Callback data is null");
+
+        return descriptions.Contains(callBackQuery);
     }
 }

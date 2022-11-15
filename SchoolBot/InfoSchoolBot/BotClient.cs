@@ -7,21 +7,9 @@ using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 using static SchoolBot.DaysOfWeek;
 using static SchoolBot.MealType;
-using static SchoolBot.MealTypeExtensions;
-using static SchoolBot.EnumHelper;
 
 
 namespace SchoolBot;
-
-public class OrderInfo
-{
-    private DaysOfWeek Day { get; }
-    private MealType MealType { get; }
-
-    public OrderInfo(DayOfWeek dayOfWeek, MealType mealType)
-    {
-    }
-}
 
 public class BotClient
 {
@@ -39,18 +27,17 @@ public class BotClient
             {
                 var pressedButtonData = update.CallbackQuery?.Data;
                 Console.WriteLine($"Pressed button = {pressedButtonData}");
-                // if (typeof(MealType).ContainsCallBackQuery(pressedButtonData))
-                if (ContainsCallBack(pressedButtonData))
+
+                if (MealTypeExtensions.ContainsCallBack(pressedButtonData))
                 {
                     await botClient.SendTextMessageAsync(
-                        chatId: update.CallbackQuery?.Message?.Chat.Id ?? 
+                        chatId: update.CallbackQuery?.Message?.Chat.Id ??
                                 throw new InvalidOperationException("Chat.Id was null"),
                         pressedButtonData,
                         cancellationToken: cancellationToken);
                     break;
                 }
 
-                // тут я думал создавать new OrderInfo()
 
                 if (update.CallbackQuery?.Message != null)
                     await botClient.EditMessageReplyMarkupAsync(
