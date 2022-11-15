@@ -16,12 +16,15 @@ public class BotClient
     private static readonly ITelegramBotClient Bot =
         new TelegramBotClient("5735097045:AAGyp2lMa72zKg2PTkLke-bFI7DS7zpu7xI");
 
+    private const string BackButton = "Назад   ◀️";
+
     private static async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update,
         CancellationToken cancellationToken)
     {
         Console.WriteLine();
-        Console.Write($"User: {JsonConvert.SerializeObject(update.Message?.From)}, ");
-        Console.WriteLine($"Type of message: {JsonConvert.SerializeObject(update.Type)}");
+        Console.WriteLine($"User: {JsonConvert.SerializeObject(update.Message?.Chat.Username)}, ");
+        Console.WriteLine($"Type of request: {JsonConvert.SerializeObject(update.Type)}");
+
         switch (update.Type)
         {
             case UpdateType.CallbackQuery:
@@ -31,20 +34,36 @@ public class BotClient
 
                 Console.WriteLine($"Pressed button = {pressedButtonData}");
 
-                if (MealTypeExtensions.ContainsButton(pressedButtonData))
+                if (pressedButtonData == BackButton)
                 {
-                    await botClient.SendTextMessageAsync(
+                    // забыть день, выбранный до этого момента
+
+                    await botClient.EditMessageTextAsync(
+                        chatId: update.CallbackQuery?.Message?.Chat.Id
+                                ?? throw new InvalidOperationException("Chat.Id was null"),
+                        messageId: update.CallbackQuery.Message.MessageId,
+                        text: "Выберите день",
+                        cancellationToken: cancellationToken);
+
+                    await botClient.EditMessageReplyMarkupAsync(
                         chatId: update.CallbackQuery?.Message?.Chat.Id ??
                                 throw new InvalidOperationException("Chat.Id was null"),
-                        text: pressedButtonData,
-                        cancellationToken: cancellationToken);
-                    break;
+                        messageId: update.CallbackQuery.Message.MessageId,
+                        cancellationToken: cancellationToken,
+                        replyMarkup: GetInlineKeyboardWithDays());
                 }
 
-
-                // Здесь надо запомнить pressedButtonData - какой день выбрал пользователь
                 if (DaysOfWeekExtensions.ContainsButton(pressedButtonData))
                 {
+                    // Здесь надо запомнить pressedButtonData - какой день выбрал пользователь
+
+                    await botClient.EditMessageTextAsync(
+                        chatId: update.CallbackQuery?.Message?.Chat.Id
+                                ?? throw new InvalidOperationException("Chat.Id was null"),
+                        messageId: update.CallbackQuery.Message.MessageId,
+                        text: "Выберите время",
+                        cancellationToken: cancellationToken);
+
                     await botClient.EditMessageReplyMarkupAsync(
                         chatId: update.CallbackQuery?.Message?.Chat.Id ??
                                 throw new InvalidOperationException("Chat.Id was null"),
@@ -55,30 +74,54 @@ public class BotClient
                     break;
                 }
 
+                if (MealTypeExtensions.ContainsButton(pressedButtonData))
+                {
+                    await botClient.SendTextMessageAsync(
+                        chatId: update.CallbackQuery?.Message?.Chat.Id ??
+                                throw new InvalidOperationException("Chat.Id was null"),
+                        text: pressedButtonData,
+                        cancellationToken: cancellationToken);
+                }
 
+ 
                 break;
             }
             case UpdateType.Message:
             {
                 var message = update.Message;
-                Console.WriteLine(message?.Text);
+                Console.WriteLine($"Message: {message?.Text}");
 
-                if (message?.Text == "/start")
+
+                if (message?.Text?.ToLower() == "/start")
                 {
-                    Debug.Assert(update.Message != null, "update.Message != null");
+                    Debug.Assert(update.Message != null, "update.Message == null");
                     await botClient.SendTextMessageAsync(update.Message.Chat,
-                        "На какой день показать расписание обэда?",
+                        "Нажмите на кнопку или отправьте в чат 'Узнать расписание'",
+                        ParseMode.MarkdownV2,
+                        cancellationToken: cancellationToken,
+                        replyMarkup: GetReplyKeyboardWithSchedule());
+                }
+
+                else if (message?.Text?.ToLower() == "узнать меню")
+                {
+                    Debug.Assert(update.Message != null, "update.Message == null");
+
+                    await botClient.SendTextMessageAsync(update.Message.Chat,
+                        "Выберите день",
                         ParseMode.MarkdownV2,
                         cancellationToken: cancellationToken,
                         replyMarkup: GetInlineKeyboardWithDays());
                 }
+
                 else
                 {
-                    Debug.Assert(message?.Chat != null, "message?.Chat != null");
-                    await botClient.SendTextMessageAsync(message.Chat,
-                        "Отправьте /start, чтобы узнать меню на неделю",
+                    Debug.Assert(update.Message != null, "update.Message == null");
+
+                    await botClient.SendTextMessageAsync(update.Message.Chat,
+                        "Нажмите на кнопку или отправьте в чат 'Узнать меню'",
                         ParseMode.MarkdownV2,
-                        cancellationToken: cancellationToken);
+                        cancellationToken: cancellationToken,
+                        replyMarkup: GetReplyKeyboardWithSchedule());
                 }
 
                 break;
@@ -86,10 +129,11 @@ public class BotClient
         }
     }
 
-    private static async Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception,
+    private static Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception,
         CancellationToken cancellationToken)
     {
         Console.WriteLine(JsonConvert.SerializeObject(exception));
+        return Task.CompletedTask;
     }
 
     public static void StartBot()
@@ -105,6 +149,19 @@ public class BotClient
             cancellationToken
         );
         Console.ReadLine();
+    }
+
+    private static ReplyKeyboardMarkup GetReplyKeyboardWithSchedule()
+    {
+        var replyKeyboardMarkup = new ReplyKeyboardMarkup(new[]
+        {
+            new[]
+            {
+                new KeyboardButton("Узнать меню"),
+            }
+        });
+        replyKeyboardMarkup.ResizeKeyboard = true;
+        return replyKeyboardMarkup;
     }
 
     private static InlineKeyboardMarkup GetInlineKeyboardWithDays()
@@ -140,10 +197,10 @@ public class BotClient
                 InlineKeyboardButton.WithCallbackData(Breakfast.GetDescription()),
                 InlineKeyboardButton.WithCallbackData(Lunch.GetDescription())
             },
-            /*new[]
+            new[]
             {
-                InlineKeyboardButton.WithCallbackData(Buffet.GetDescription()),
-            },*/
+                InlineKeyboardButton.WithCallbackData(BackButton),
+            },
         });
 
         return inlineKeyboard;
