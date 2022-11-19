@@ -60,39 +60,15 @@ public class BotClient
                 {
                     // забыть день, выбранный до этого момента
 
-                    await botClient.EditMessageTextAsync(
-                        chatId: update.CallbackQuery?.Message?.Chat.Id
-                                ?? throw new InvalidOperationException("Chat.Id was null"),
-                        messageId: update.CallbackQuery.Message.MessageId,
-                        text: "Выберите день",
-                        cancellationToken: cancellationToken);
-
-                    await botClient.EditMessageReplyMarkupAsync(
-                        chatId: update.CallbackQuery?.Message?.Chat.Id ??
-                                throw new InvalidOperationException("Chat.Id was null"),
-                        messageId: update.CallbackQuery.Message.MessageId,
-                        cancellationToken: cancellationToken,
-                        replyMarkup: GetInlineKeyboardWithDays());
+                    await EditSentMessageAndMarkup("Выберите день", GetInlineKeyboardWithDays());
+                    break;
                 }
 
                 if (DaysOfWeekExtensions.ContainsButton(pressedButtonData))
                 {
                     // Здесь надо запомнить pressedButtonData - какой день выбрал пользователь
 
-                    await botClient.EditMessageTextAsync(
-                        chatId: update.CallbackQuery?.Message?.Chat.Id
-                                ?? throw new InvalidOperationException("Chat.Id was null"),
-                        messageId: update.CallbackQuery.Message.MessageId,
-                        text: "Выберите время",
-                        cancellationToken: cancellationToken);
-
-                    await botClient.EditMessageReplyMarkupAsync(
-                        chatId: update.CallbackQuery?.Message?.Chat.Id ??
-                                throw new InvalidOperationException("Chat.Id was null"),
-                        messageId: update.CallbackQuery.Message.MessageId,
-                        cancellationToken: cancellationToken,
-                        replyMarkup: GetInlineKeyboardWithTimeOfMeal());
-
+                    await EditSentMessageAndMarkup("Выберите время", GetInlineKeyboardWithTimeOfMeal());
                     break;
                 }
 
@@ -104,8 +80,7 @@ public class BotClient
                         text: pressedButtonData,
                         cancellationToken: cancellationToken);
                 }
-
-
+                
                 break;
             }
             case UpdateType.Message:
@@ -148,6 +123,23 @@ public class BotClient
 
                 break;
             }
+        }
+
+        async Task EditSentMessageAndMarkup(string textMessage, InlineKeyboardMarkup markup)
+        {
+            await botClient.EditMessageTextAsync(
+                chatId: update.CallbackQuery?.Message?.Chat.Id
+                        ?? throw new InvalidOperationException("Chat.Id was null"),
+                messageId: update.CallbackQuery.Message.MessageId,
+                text: textMessage,
+                cancellationToken: cancellationToken);
+
+            await botClient.EditMessageReplyMarkupAsync(
+                chatId: update.CallbackQuery?.Message?.Chat.Id ??
+                        throw new InvalidOperationException("Chat.Id was null"),
+                messageId: update.CallbackQuery.Message.MessageId,
+                cancellationToken: cancellationToken,
+                replyMarkup: markup);
         }
     }
 
