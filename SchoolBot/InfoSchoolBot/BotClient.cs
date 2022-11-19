@@ -13,16 +13,19 @@ namespace SchoolBot;
 
 public class BotClient
 {
+    private const string BackButton = "Назад   ◀️";
+
     private static readonly ITelegramBotClient Bot =
         new TelegramBotClient("5735097045:AAGyp2lMa72zKg2PTkLke-bFI7DS7zpu7xI");
-    
-    
+
+
     public static void StartBot()
     {
         Console.WriteLine("Запущен бот " + Bot.GetMeAsync().Result.FirstName);
 
         var cancellationToken = new CancellationTokenSource().Token;
         var receiverOptions = new ReceiverOptions();
+
         Bot.StartReceiving(
             HandleUpdateAsync,
             HandleErrorAsync,
@@ -31,23 +34,23 @@ public class BotClient
         );
         Console.ReadLine();
     }
-    
 
-    private const string BackButton = "Назад   ◀️";
 
     private static async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update,
         CancellationToken cancellationToken)
     {
-        //var 
-
         Console.WriteLine();
-        Console.WriteLine($"User: {JsonConvert.SerializeObject(update.Message?.Chat)}, ");
         Console.WriteLine($"Type of request: {JsonConvert.SerializeObject(update.Type)}");
 
         switch (update.Type)
         {
             case UpdateType.CallbackQuery:
             {
+                Console.WriteLine(
+                    $"User: {JsonConvert.SerializeObject(update.CallbackQuery?.From.Username)}; Nickname: " +
+                    $"{JsonConvert.SerializeObject(update.CallbackQuery?.From.FirstName)} " +
+                    $"{JsonConvert.SerializeObject(update.CallbackQuery?.From.LastName)}");
+
                 var pressedButtonData =
                     update.CallbackQuery?.Data ?? throw new ArgumentException("Nobody pressed the button");
 
@@ -108,8 +111,8 @@ public class BotClient
             case UpdateType.Message:
             {
                 var message = update.Message;
+                Console.WriteLine($"User: {JsonConvert.SerializeObject(update.Message?.Chat)}, ");
                 Console.WriteLine($"Message: {message?.Text}");
-
 
                 if (message?.Text?.ToLower() == "/start")
                 {
