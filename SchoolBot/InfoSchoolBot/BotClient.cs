@@ -18,6 +18,8 @@ public class BotClient
     private static readonly ITelegramBotClient Bot =
         new TelegramBotClient("5735097045:AAGyp2lMa72zKg2PTkLke-bFI7DS7zpu7xI");
 
+    private static RequestFormatter Formatter = new RequestFormatter();  
+
 
     public static void StartBot()
     {
@@ -39,6 +41,8 @@ public class BotClient
     private static async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update,
         CancellationToken cancellationToken)
     {
+        var requestFormatter = new RequestFormatter();
+        
         Console.WriteLine();
         Console.WriteLine($"Type of request: {JsonConvert.SerializeObject(update.Type)}");
 
@@ -59,6 +63,7 @@ public class BotClient
                 if (pressedButtonData == BackButton)
                 {
                     // забыть день, выбранный до этого момента
+                    // requestFormatter.ClearDay();
 
                     await EditSentMessageAndMarkup("Выберите день", GetInlineKeyboardWithDays());
                     break;
@@ -67,17 +72,21 @@ public class BotClient
                 if (DaysOfWeekExtensions.ContainsButton(pressedButtonData))
                 {
                     // Здесь надо запомнить pressedButtonData - какой день выбрал пользователь
-
+                    requestFormatter.UpdateDay(pressedButtonData);
+                    
                     await EditSentMessageAndMarkup("Выберите время", GetInlineKeyboardWithTimeOfMeal());
                     break;
                 }
 
                 if (MealTypeExtensions.ContainsButton(pressedButtonData))
                 {
+                    // Запомнить милтайп
+                    requestFormatter.UpdateMealType(pressedButtonData);
+                    
                     await botClient.SendTextMessageAsync(
                         chatId: update.CallbackQuery?.Message?.Chat.Id ??
                                 throw new InvalidOperationException("Chat.Id was null"),
-                        text: pressedButtonData,
+                        text: SqlRequest.GetAnswer(requestFormatter),
                         cancellationToken: cancellationToken);
                 }
                 
