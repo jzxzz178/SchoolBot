@@ -11,14 +11,15 @@ using static SchoolBot.MealType;
 
 namespace SchoolBot;
 
-public class BotClient
+public static class BotClient
 {
     private const string BackButton = "Назад   ◀️";
 
     private static readonly ITelegramBotClient Bot =
         new TelegramBotClient("5735097045:AAGyp2lMa72zKg2PTkLke-bFI7DS7zpu7xI");
 
-    private static RequestFormatter Formatter = new RequestFormatter();  
+    // Key: UserID, Value: selected Day
+    private static readonly Dictionary<string, string?> DaySelectedByUser = new Dictionary<string, string?>();
 
 
     public static void StartBot()
@@ -41,8 +42,6 @@ public class BotClient
     private static async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update,
         CancellationToken cancellationToken)
     {
-        var requestFormatter = new RequestFormatter();
-        
         Console.WriteLine();
         Console.WriteLine($"Type of request: {JsonConvert.SerializeObject(update.Type)}");
 
@@ -51,10 +50,12 @@ public class BotClient
             case UpdateType.CallbackQuery:
             {
                 Console.WriteLine(
-                    $"User: {JsonConvert.SerializeObject(update.CallbackQuery?.From.Username)}; Nickname: " +
+                    $"UserID: {JsonConvert.SerializeObject(update.CallbackQuery?.From.Username)}; Nickname: " +
                     $"{JsonConvert.SerializeObject(update.CallbackQuery?.From.FirstName)} " +
                     $"{JsonConvert.SerializeObject(update.CallbackQuery?.From.LastName)}");
 
+                var requestFormatter = new RequestFormatter();
+                var userId = JsonConvert.SerializeObject(update.CallbackQuery?.From.Username);
                 var pressedButtonData =
                     update.CallbackQuery?.Data ?? throw new ArgumentException("Nobody pressed the button");
 
@@ -63,7 +64,7 @@ public class BotClient
                 if (pressedButtonData == BackButton)
                 {
                     // забыть день, выбранный до этого момента
-                    // requestFormatter.ClearDay();
+                    DaySelectedByUser.Remove(userId);
 
                     await EditSentMessageAndMarkup("Выберите день", GetInlineKeyboardWithDays());
                     break;
@@ -72,30 +73,33 @@ public class BotClient
                 if (DaysOfWeekExtensions.ContainsButton(pressedButtonData))
                 {
                     // Здесь надо запомнить pressedButtonData - какой день выбрал пользователь
-                    requestFormatter.UpdateDay(pressedButtonData);
-                    
+                    DaySelectedByUser[userId] = pressedButtonData;
+
                     await EditSentMessageAndMarkup("Выберите время", GetInlineKeyboardWithTimeOfMeal());
                     break;
                 }
 
                 if (MealTypeExtensions.ContainsButton(pressedButtonData))
                 {
-                    // Запомнить милтайп
+                    // Запомнить MealType
+                    requestFormatter.UpdateDay(DaySelectedByUser[userId]);
                     requestFormatter.UpdateMealType(pressedButtonData);
-                    
+
                     await botClient.SendTextMessageAsync(
                         chatId: update.CallbackQuery?.Message?.Chat.Id ??
                                 throw new InvalidOperationException("Chat.Id was null"),
                         text: SqlRequest.GetAnswer(requestFormatter),
                         cancellationToken: cancellationToken);
                 }
-                
+
                 break;
             }
             case UpdateType.Message:
             {
                 var message = update.Message;
-                Console.WriteLine($"User: {JsonConvert.SerializeObject(update.Message?.Chat)}, ");
+                Console.WriteLine($"UserID: {JsonConvert.SerializeObject(update.Message?.From?.Username)}; Nickname: " +
+                                  $"{JsonConvert.SerializeObject(update.Message?.From?.FirstName)} " +
+                                  $"{JsonConvert.SerializeObject(update.Message?.From?.LastName)}");
                 Console.WriteLine($"Message: {message?.Text}");
 
                 if (message?.Text?.ToLower() == "/start")
@@ -168,8 +172,10 @@ public class BotClient
             {
                 new KeyboardButton("Узнать меню"),
             }
-        });
-        replyKeyboardMarkup.ResizeKeyboard = true;
+        })
+        {
+            ResizeKeyboard = true
+        };
         return replyKeyboardMarkup;
     }
 
