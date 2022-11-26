@@ -1,8 +1,8 @@
 ﻿namespace SchoolBot;
 
-class Program
+static class Program
 {
-    static void Main(string[] args)
+    private static void Main()
     {
         BotClient.StartBot();
     }

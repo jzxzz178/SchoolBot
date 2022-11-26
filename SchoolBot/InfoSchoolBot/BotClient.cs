@@ -55,8 +55,7 @@ public static class BotClient
 
                 var requestFormatter = new RequestFormatter();
                 var userId = JsonConvert.SerializeObject(update.CallbackQuery?.From.Username);
-                var pressedButtonData =
-                    update.CallbackQuery?.Data ?? throw new ArgumentException("Nobody pressed the button");
+                var pressedButtonData = update.CallbackQuery?.Data;
 
                 Console.WriteLine($"Pressed button = {pressedButtonData}");
 
@@ -96,6 +95,11 @@ public static class BotClient
 
                     await SendTextMessage(update.CallbackQuery?.Message?.Chat.Id!,
                         SqlRequest.GetAnswer(requestFormatter));
+                    
+                    // Эта строка нужна для того, чтобы после нажатия на кнопку исчезала
+                    // анимация подгрузки в виде часов на этой кнопке
+                    await botClient.AnswerCallbackQueryAsync(callbackQueryId: update.CallbackQuery!.Id,
+                        cancellationToken: cancellationToken);
                 }
 
                 break;
@@ -114,12 +118,12 @@ public static class BotClient
                         await SendTextMessage(update.Message!.Chat.Id,
                             "Нажмите на кнопку или отправьте в чат 'Узнать меню'", GetReplyKeyboardWithSchedule());
                         break;
-                    
+
                     case "узнать меню":
                         await SendTextMessage(update.Message!.Chat.Id,
                             "Выберите день", GetInlineKeyboardWithDays());
                         break;
-                    
+
                     default:
                         await SendTextMessage(update.Message!.Chat.Id,
                             "Нажмите на кнопку или отправьте в чат 'Узнать меню'", GetReplyKeyboardWithSchedule());
