@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Telegram.Bot;
 using Telegram.Bot.Extensions.Polling;
 using Telegram.Bot.Types;
@@ -66,7 +65,8 @@ public static class BotClient
                     // забыть день, выбранный до этого момента
                     DaySelectedByUser.Remove(userId);
 
-                    await EditSentMessageAndMarkup("Выберите день", GetInlineKeyboardWithDays());
+                    await EditSentMessageAndMarkup(update.CallbackQuery?.Message!, "Выберите день",
+                        GetInlineKeyboardWithDays());
                     break;
                 }
 
@@ -75,21 +75,27 @@ public static class BotClient
                     // Здесь надо запомнить pressedButtonData - какой день выбрал пользователь
                     DaySelectedByUser[userId] = pressedButtonData;
 
-                    await EditSentMessageAndMarkup("Выберите время", GetInlineKeyboardWithTimeOfMeal());
+                    await EditSentMessageAndMarkup(update.CallbackQuery?.Message!, "Выберите время",
+                        GetInlineKeyboardWithTimeOfMeal());
                     break;
                 }
 
                 if (MealTypeExtensions.ContainsButton(pressedButtonData))
                 {
-                    // Запомнить MealType
-                    requestFormatter.UpdateDay(DaySelectedByUser[userId]);
-                    requestFormatter.UpdateMealType(pressedButtonData);
+                    // Запомнить MealType в словарь
+                    if (DaySelectedByUser.ContainsKey(userId))
+                    {
+                        requestFormatter.UpdateDay(DaySelectedByUser[userId]);
+                        requestFormatter.UpdateMealType(pressedButtonData);
+                    }
+                    else
+                    {
+                        await SendExceptionMessage(update.CallbackQuery?.Message?.Chat.Id!);
+                        break;
+                    }
 
-                    await botClient.SendTextMessageAsync(
-                        chatId: update.CallbackQuery?.Message?.Chat.Id ??
-                                throw new InvalidOperationException("Chat.Id was null"),
-                        text: SqlRequest.GetAnswer(requestFormatter),
-                        cancellationToken: cancellationToken);
+                    await SendTextMessage(update.CallbackQuery?.Message?.Chat.Id!,
+                        SqlRequest.GetAnswer(requestFormatter));
                 }
 
                 break;
@@ -102,57 +108,58 @@ public static class BotClient
                                   $"{JsonConvert.SerializeObject(update.Message?.From?.LastName)}");
                 Console.WriteLine($"Message: {message?.Text}");
 
-                if (message?.Text?.ToLower() == "/start")
+                switch (message?.Text?.ToLower())
                 {
-                    Debug.Assert(update.Message != null, "update.Message == null");
-                    await botClient.SendTextMessageAsync(update.Message.Chat,
-                        "Нажмите на кнопку или отправьте в чат 'Узнать расписание'",
-                        ParseMode.MarkdownV2,
-                        cancellationToken: cancellationToken,
-                        replyMarkup: GetReplyKeyboardWithSchedule());
-                }
-
-                else if (message?.Text?.ToLower() == "узнать меню")
-                {
-                    Debug.Assert(update.Message != null, "update.Message == null");
-
-                    await botClient.SendTextMessageAsync(update.Message.Chat,
-                        "Выберите день",
-                        ParseMode.MarkdownV2,
-                        cancellationToken: cancellationToken,
-                        replyMarkup: GetInlineKeyboardWithDays());
-                }
-
-                else
-                {
-                    Debug.Assert(update.Message != null, "update.Message == null");
-
-                    await botClient.SendTextMessageAsync(update.Message.Chat,
-                        "Нажмите на кнопку или отправьте в чат 'Узнать меню'",
-                        ParseMode.MarkdownV2,
-                        cancellationToken: cancellationToken,
-                        replyMarkup: GetReplyKeyboardWithSchedule());
+                    case "/start":
+                        await SendTextMessage(update.Message!.Chat.Id,
+                            "Нажмите на кнопку или отправьте в чат 'Узнать меню'", GetReplyKeyboardWithSchedule());
+                        break;
+                    
+                    case "узнать меню":
+                        await SendTextMessage(update.Message!.Chat.Id,
+                            "Выберите день", GetInlineKeyboardWithDays());
+                        break;
+                    
+                    default:
+                        await SendTextMessage(update.Message!.Chat.Id,
+                            "Нажмите на кнопку или отправьте в чат 'Узнать меню'", GetReplyKeyboardWithSchedule());
+                        break;
                 }
 
                 break;
             }
         }
 
-        async Task EditSentMessageAndMarkup(string textMessage, InlineKeyboardMarkup markup)
+        async Task EditSentMessageAndMarkup(Message message, string textMessage, InlineKeyboardMarkup markup)
         {
             await botClient.EditMessageTextAsync(
-                chatId: update.CallbackQuery?.Message?.Chat.Id
-                        ?? throw new InvalidOperationException("Chat.Id was null"),
-                messageId: update.CallbackQuery.Message.MessageId,
+                chatId: message.Chat.Id,
+                messageId: message.MessageId,
                 text: textMessage,
                 cancellationToken: cancellationToken);
 
             await botClient.EditMessageReplyMarkupAsync(
-                chatId: update.CallbackQuery?.Message?.Chat.Id ??
-                        throw new InvalidOperationException("Chat.Id was null"),
-                messageId: update.CallbackQuery.Message.MessageId,
+                chatId: message.Chat.Id,
+                messageId: message.MessageId,
                 cancellationToken: cancellationToken,
                 replyMarkup: markup);
+        }
+
+        async Task SendExceptionMessage(ChatId chatId)
+        {
+            await botClient.SendTextMessageAsync(
+                chatId: chatId,
+                text: "Ой, что-то пошло не так... Повторите попытку",
+                cancellationToken: cancellationToken);
+        }
+
+        async Task SendTextMessage(ChatId chatId, string text, IReplyMarkup? replyMarkup = null)
+        {
+            await botClient.SendTextMessageAsync(
+                chatId: chatId,
+                text: text,
+                cancellationToken: cancellationToken,
+                replyMarkup: replyMarkup);
         }
     }
 
