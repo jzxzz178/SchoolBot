@@ -158,8 +158,14 @@ public static class BotClient
                 cancellationToken: cancellationToken);
         }
 
-        async Task SendTextMessage(ChatId chatId, string text, IReplyMarkup? replyMarkup = null)
+        async Task SendTextMessage(ChatId chatId, string? text, IReplyMarkup? replyMarkup = null)
         {
+            if (text == null)
+            {
+                await SendExceptionMessage(chatId);
+                return;
+            }
+            
             await botClient.SendTextMessageAsync(
                 chatId: chatId,
                 text: text,

@@ -7,10 +7,13 @@ public class RequestFormatter
 
     public void UpdateDay(string? day)
     {
-        /*if (day == DaysOfWeek.Today.GetDescription())
+        if (day == DaysOfWeek.Today.GetDescription())
         {
-            Day = DateTime.Today.GetDescription();
-        }*/
+            Day = System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.DayNames[
+                (int) Convert.ToDateTime(DateTime.Today).DayOfWeek];
+            Day = Day.First().ToString().ToUpper() + Day.Remove(0, 1);
+            return;
+        }
         Day = day;
     }
 

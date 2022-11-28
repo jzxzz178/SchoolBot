@@ -4,9 +4,9 @@ namespace SchoolBot;
 
 public static class SqlRequest
 {
-    public static string GetAnswer(RequestFormatter request)
+    public static string? GetAnswer(RequestFormatter request)
     {
-        if (request == null || request.Day == null || request.MealType == null)
+        if (request.Day == null || request.MealType == null)
             return "У Феди ошибка";
 
         using var connection =
@@ -27,12 +27,12 @@ public static class SqlRequest
                         return reader.GetValue(1).ToString();
                 }
 
-                return $"Пока нет расписания на {request.MealType} !!!";
+                return $"Пока нет меню на {request.MealType} !!!";
             }
         }
         catch
         {
-            return $"Пока нет расписания на {request.Day}!!!";
+            return $"Пока нет меню на {request.Day} !!!";
         }
     }
 }
