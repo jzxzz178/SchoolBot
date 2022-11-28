@@ -1,12 +1,38 @@
-﻿namespace SchoolBot;
+﻿using Microsoft.Data.Sqlite;
+
+namespace SchoolBot;
 
 public static class SqlRequest
 {
-    public static string GetAnswer(RequestFormatter requestFormat)
+    public static string GetAnswer(RequestFormatter request)
     {
-        if (requestFormat.Day == null || requestFormat.MealType == null)
-            throw new AggregateException("Day or MealType is null");
-        
-        return requestFormat.Day + ' ' + requestFormat.MealType;
+        if (request == null || request.Day == null || request.MealType == null)
+            return "У Феди ошибка";
+
+        using var connection =
+            new SqliteConnection(
+                @"Data Source = D:\учёба\SchoolBot Repository\food_info.db");
+        connection.Open();
+        var sqlExpression = "SELECT * FROM " + request.Day;
+        try
+        {
+            SqliteCommand command = new SqliteCommand(sqlExpression, connection);
+            using (SqliteDataReader reader = command.ExecuteReader())
+            {
+                if (!reader.HasRows) return "Меню еще нет на этот день :(";
+                while (reader.Read())
+                {
+                    var meal = reader.GetValue(0).ToString();
+                    if (meal == request.MealType)
+                        return reader.GetValue(1).ToString();
+                }
+
+                return $"Пока нет расписания на {request.MealType} !!!";
+            }
+        }
+        catch
+        {
+            return $"Пока нет расписания на {request.Day}!!!";
+        }
     }
 }

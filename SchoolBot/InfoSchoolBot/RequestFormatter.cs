@@ -5,7 +5,14 @@ public class RequestFormatter
     public string? Day { get; private set; }
     public string? MealType { get; private set; }
 
-    public void UpdateDay(string? day) => Day = day;
+    public void UpdateDay(string? day)
+    {
+        /*if (day == DaysOfWeek.Today.GetDescription())
+        {
+            Day = DateTime.Today.GetDescription();
+        }*/
+        Day = day;
+    }
 
     public void ClearDay() => Day = null;
 

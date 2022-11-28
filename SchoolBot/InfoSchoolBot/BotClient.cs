@@ -93,6 +93,7 @@ public static class BotClient
                         break;
                     }
 
+                    Console.WriteLine(SqlRequest.GetAnswer(requestFormatter));
                     await SendTextMessage(update.CallbackQuery?.Message?.Chat.Id!,
                         SqlRequest.GetAnswer(requestFormatter));
                     
