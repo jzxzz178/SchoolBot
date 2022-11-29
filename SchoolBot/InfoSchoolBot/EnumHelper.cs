@@ -23,28 +23,3 @@ public static class EnumHelper
         return attribute.Description;
     }
 }
-
-// в идеале, надо перенести MealTypeExtensions.ContainsCallBack в этот класс,
-// но как это сделать, я понятия не имею
-
-/*public static class EnumExtensions
-{
-    public static bool ContainsCallBackQuery<T>(this T enumName, string? callBackQuery)
-        where T : Enum
-    {
-        if (enumName == null || !enumName.GetType().IsEnum)
-            throw new ArgumentException($"{enumName} is not Enum or null");
-
-        if (callBackQuery == null)
-            throw new ArgumentException("Callback is null");
-
-
-        var descriptions = Enum
-            .GetValues(enumName?.GetType() ?? throw new ArgumentException("Callable object.GetType() is null"))
-            .Cast<T>()
-            .Select(val => val.GetDescription())
-            .ToArray();
-
-        return descriptions.Contains(callBackQuery);
-    }
-}*/

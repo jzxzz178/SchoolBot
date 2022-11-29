@@ -4,14 +4,15 @@ namespace SchoolBot;
 
 public static class SqlRequest
 {
+    private const string Path = @"Data Source = F:\Учёба\Telegram InfoSchoolBot\food_info.db";
+
     public static string? GetAnswer(RequestFormatter request)
     {
         if (request.Day == null || request.MealType == null)
             return "У Феди ошибка";
 
         using var connection =
-            new SqliteConnection(
-                @"Data Source = D:\учёба\SchoolBot Repository\food_info.db");
+            new SqliteConnection(Path);
         connection.Open();
         var sqlExpression = "SELECT * FROM " + request.Day;
         try

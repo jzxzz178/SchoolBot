@@ -9,7 +9,7 @@ public class RequestFormatter
     {
         if (day == DaysOfWeek.Today.GetDescription())
         {
-            Day = System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.DayNames[
+            Day = System.Globalization.CultureInfo.GetCultureInfo("ru-RU").DateTimeFormat.DayNames[
                 (int) Convert.ToDateTime(DateTime.Today).DayOfWeek];
             Day = Day.First().ToString().ToUpper() + Day.Remove(0, 1);
             return;

@@ -48,14 +48,15 @@ public static class BotClient
         {
             case UpdateType.CallbackQuery:
             {
-                Console.WriteLine(
-                    $"UserID: {JsonConvert.SerializeObject(update.CallbackQuery?.From.Username)}; Nickname: " +
-                    $"{JsonConvert.SerializeObject(update.CallbackQuery?.From.FirstName)} " +
-                    $"{JsonConvert.SerializeObject(update.CallbackQuery?.From.LastName)}");
-
                 var requestFormatter = new RequestFormatter();
                 var userId = JsonConvert.SerializeObject(update.CallbackQuery?.From.Username);
                 var pressedButtonData = update.CallbackQuery?.Data;
+                
+                Console.WriteLine(
+                    $"UserID: {userId}; Nickname: " +
+                    $"{JsonConvert.SerializeObject(update.CallbackQuery?.From.FirstName)} " +
+                    $"{JsonConvert.SerializeObject(update.CallbackQuery?.From.LastName)}");
+
 
                 Console.WriteLine($"Pressed button = {pressedButtonData}");
 
@@ -96,7 +97,7 @@ public static class BotClient
                     Console.WriteLine(SqlRequest.GetAnswer(requestFormatter));
                     await SendTextMessage(update.CallbackQuery?.Message?.Chat.Id!,
                         SqlRequest.GetAnswer(requestFormatter));
-                    
+
                     // Эта строка нужна для того, чтобы после нажатия на кнопку исчезала
                     // анимация подгрузки в виде часов на этой кнопке
                     await botClient.AnswerCallbackQueryAsync(callbackQueryId: update.CallbackQuery!.Id,
@@ -165,7 +166,7 @@ public static class BotClient
                 await SendExceptionMessage(chatId);
                 return;
             }
-            
+
             await botClient.SendTextMessageAsync(
                 chatId: chatId,
                 text: text,
