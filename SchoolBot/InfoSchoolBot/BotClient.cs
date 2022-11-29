@@ -142,6 +142,7 @@ public static class BotClient
                 chatId: message.Chat.Id,
                 messageId: message.MessageId,
                 text: textMessage,
+                parseMode: ParseMode.Markdown,
                 cancellationToken: cancellationToken);
 
             await botClient.EditMessageReplyMarkupAsync(
@@ -170,6 +171,7 @@ public static class BotClient
             await botClient.SendTextMessageAsync(
                 chatId: chatId,
                 text: text,
+                parseMode: ParseMode.Markdown,
                 cancellationToken: cancellationToken,
                 replyMarkup: replyMarkup);
         }
