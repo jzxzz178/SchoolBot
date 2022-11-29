@@ -15,7 +15,7 @@ public static class BotClient
     private const string BackButton = "Назад   ◀️";
 
     private static readonly ITelegramBotClient Bot =
-        new TelegramBotClient("5735097045:AAGyp2lMa72zKg2PTkLke-bFI7DS7zpu7xI");
+        new TelegramBotClient("5644651078:AAHSwqM07BhX-3N0qiL9ft3aUFKokfWrPOc");
 
     // Key: UserID, Value: selected Day
     private static readonly Dictionary<string, string?> DaySelectedByUser = new Dictionary<string, string?>();
@@ -94,7 +94,7 @@ public static class BotClient
                         break;
                     }
 
-                    Console.WriteLine(SqlRequest.GetAnswer(requestFormatter));
+                    // Console.WriteLine(SqlRequest.GetAnswer(requestFormatter));
                     await SendTextMessage(update.CallbackQuery?.Message?.Chat.Id!,
                         SqlRequest.GetAnswer(requestFormatter));
 
