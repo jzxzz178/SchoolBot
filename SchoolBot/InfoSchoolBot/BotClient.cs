@@ -51,7 +51,7 @@ public static class BotClient
                 var requestFormatter = new RequestFormatter();
                 var userId = JsonConvert.SerializeObject(update.CallbackQuery?.From.Username);
                 var pressedButtonData = update.CallbackQuery?.Data;
-                
+
                 Console.WriteLine(
                     $"UserID: {userId}; Nickname: " +
                     $"{JsonConvert.SerializeObject(update.CallbackQuery?.From.FirstName)} " +
@@ -109,7 +109,10 @@ public static class BotClient
             case UpdateType.Message:
             {
                 var message = update.Message;
-                Console.WriteLine($"UserID: {JsonConvert.SerializeObject(update.Message?.From?.Username)}; Nickname: " +
+                var userId = JsonConvert.SerializeObject(update.Message?.From?.Username);
+                
+                userId = userId.Remove(0, 1).Remove(userId.Length - 2, 1);
+                Console.WriteLine($"UserID: {userId}; Nickname: " +
                                   $"{JsonConvert.SerializeObject(update.Message?.From?.FirstName)} " +
                                   $"{JsonConvert.SerializeObject(update.Message?.From?.LastName)}");
                 Console.WriteLine($"Message: {message?.Text}");
