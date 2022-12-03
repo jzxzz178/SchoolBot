@@ -4,7 +4,8 @@ namespace SchoolBot;
 
 public static class SqlRequest
 {
-    private const string Path = @"Data Source = F:\Учёба\Telegram InfoSchoolBot\food_info.db";
+    private const string Path =
+        @"Data Source = F:\Учёба\Telegram_InfoSchoolBot\GetFilesAndExecPython\GetFilesAndExecutePython\bin\Debug\net6.0\food_info.db";
 
     public static string? GetAnswer(RequestFormatter request)
     {
