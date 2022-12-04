@@ -12,7 +12,6 @@ static class UpdatingDb
         var days = GetCurrentDays();
         foreach (var day in days)
         {
-            Console.WriteLine(scriptsDirectory);
             var isDownloadWasCorrect = DownloadFileFromSite(day);
             if (!isDownloadWasCorrect) continue;
             
@@ -42,7 +41,6 @@ static class UpdatingDb
     { 
         var address = $"https://xn--47-6kclvec3aj7p.xn--80acgfbsl1azdqr.xn--p1ai/food/{date:yyyy-MM-dd}-sm.xls"; 
         var localFileName = $"{scriptsDirectory}\\excels\\{date:yyyy-MM-dd}-sm.xls";
-        Console.WriteLine(localFileName);
         var client = new WebClient();
         try 
         {
@@ -51,7 +49,6 @@ static class UpdatingDb
         }
         catch (Exception e) 
         {
-            
             Console.WriteLine(e);
             return false;
         }

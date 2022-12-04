@@ -11,8 +11,6 @@ public static class SqlRequest
     {
         if (request.Day == null || request.MealType == null)
             return "У Феди ошибка";
-        
-        Console.WriteLine(dataBase);
 
         using var connection =
             new SqliteConnection(dataBase);
