@@ -4,16 +4,18 @@ namespace SchoolBot;
 
 public static class SqlRequest
 {
-    private const string Path =
-        @"Data Source = F:\Учёба\Telegram_InfoSchoolBot\GetFilesAndExecPython\GetFilesAndExecutePython\bin\Debug\net6.0\food_info.db";
+    private static string dataBase =
+        @$"Data Source = {Environment.CurrentDirectory.Replace(@"SchoolBot\InfoSchoolBot\bin\Debug\net6.0", "")}FoodDataBase\food_info.db";
 
     public static string? GetAnswer(RequestFormatter request)
     {
         if (request.Day == null || request.MealType == null)
             return "У Феди ошибка";
+        
+        Console.WriteLine(dataBase);
 
         using var connection =
-            new SqliteConnection(Path);
+            new SqliteConnection(dataBase);
         connection.Open();
         var sqlExpression = "SELECT * FROM " + request.Day;
         try
