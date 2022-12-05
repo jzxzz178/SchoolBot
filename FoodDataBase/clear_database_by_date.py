@@ -21,6 +21,6 @@ def clear_database(db):
 
 today = [int(e) for e in sys.argv[1].split("-")]
 today = datetime(today[0], today[1], today[2])
-data_base = sqlite3.connect(r'F:\Учёба\Telegram_InfoSchoolBot\FoodDataBase\food_info.db')
+data_base = sqlite3.connect(sys.argv[2] + r'\food_info.db')
 clear_database(data_base)
 data_base.close()

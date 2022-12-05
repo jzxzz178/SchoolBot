@@ -22,13 +22,13 @@ static class UpdatingDb
             };
 
             // var currentDirectory = Directory.GetCurrentDirectory();
-            var clearCmd = $"{scriptsDirectory}\\clear_database_by_date.py";
-            var updateCmd = $"{scriptsDirectory}\\update_database.py";
+            var clearCmd = @$"{scriptsDirectory}\clear_database_by_date.py";
+            var updateCmd = @$"{scriptsDirectory}\update_database.py";
 
             var arg1 = $" {day:yyyy-MM-dd}";
             var arg2 = $" {scriptsDirectory}";
                     
-            psi.Arguments = clearCmd + arg1;
+            psi.Arguments = clearCmd + arg1 + arg2;
             psi.UseShellExecute = false;
             using Process clearProcess = Process.Start(psi);
 
@@ -56,11 +56,11 @@ static class UpdatingDb
 
     private static List<DateTime> GetCurrentDays()
     {
-        var currentDayDT= DateTime.Today;
+        var currentDay= DateTime.Today;
         var dayNumber = (int) DateTime.Now.DayOfWeek;
         if (dayNumber != 0 & dayNumber != 6)
-            return GetWeekdays(currentDayDT);
-        return GetWeekdays(currentDayDT.AddDays(3));
+            return GetWeekdays(currentDay);
+        return GetWeekdays(currentDay.AddDays(3));
     }
 
     private static List<DateTime> GetWeekdays(DateTime currentDayDT)

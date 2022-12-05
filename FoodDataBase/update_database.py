@@ -55,7 +55,7 @@ today = datetime(today[0], today[1], today[2])
 dir_path = sys.argv[2]
 path = pathlib.Path(dir_path, "excels", file)
 if os.path.exists(str(path)):
-    db = sqlite3.connect(r'F:\Учёба\Telegram_InfoSchoolBot\FoodDataBase\food_info.db')
+    db = sqlite3.connect(dir_path + r'\food_info.db')
     parsed_excel = parse_food_from_excel(path)
     update_database(db, parsed_excel)
     db.close()

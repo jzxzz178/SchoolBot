@@ -17,6 +17,6 @@ def clear_database(db):
     db.commit()
 
 
-data_base = sqlite3.connect(r'F:\Учёба\Telegram_InfoSchoolBot\FoodDataBase\food_info.db')
+data_base = sqlite3.connect('food_info.db')
 clear_database(data_base)
 data_base.close()
