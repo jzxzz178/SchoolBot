@@ -3,9 +3,9 @@ using System.Net;
 
 namespace GetFilesAndExecPython;
 
-static class UpdatingDb
+static class UpdatingDataBase
 {
-    private static string scriptsDirectory =
+    private static readonly string ScriptsDirectory =
         @$"{Environment.CurrentDirectory.Replace(@"GetFilesAndExecPython\GetFilesAndExecutePython\bin\Debug\net6.0", "")}FoodDataBase";
     static void Main(string[] args)
     {
@@ -22,17 +22,17 @@ static class UpdatingDb
             };
 
             // var currentDirectory = Directory.GetCurrentDirectory();
-            var clearCmd = @$"{scriptsDirectory}\clear_database_by_date.py";
-            var updateCmd = @$"{scriptsDirectory}\update_database.py";
+            var clearByDateScript = @$"{ScriptsDirectory}\clear_database_by_date.py";
+            var updateDataBaseScript = @$"{ScriptsDirectory}\update_database.py";
 
             var arg1 = $" {day:yyyy-MM-dd}";
-            var arg2 = $" {scriptsDirectory}";
-                    
-            psi.Arguments = clearCmd + arg1 + arg2;
+            var arg2 = $" {ScriptsDirectory}";
+
+            psi.Arguments = clearByDateScript + arg1 + arg2;
             psi.UseShellExecute = false;
             using Process clearProcess = Process.Start(psi);
 
-            psi.Arguments = updateCmd + arg1 + arg2;
+            psi.Arguments = updateDataBaseScript + arg1 + arg2;
             using Process updateProcess = Process.Start(psi);
         }
     }
@@ -40,7 +40,7 @@ static class UpdatingDb
     private static bool DownloadFileFromSite(DateTime date) 
     { 
         var address = $"https://xn--47-6kclvec3aj7p.xn--80acgfbsl1azdqr.xn--p1ai/food/{date:yyyy-MM-dd}-sm.xls"; 
-        var localFileName = $"{scriptsDirectory}\\excels\\{date:yyyy-MM-dd}-sm.xls";
+        var localFileName = $"{ScriptsDirectory}\\excels\\{date:yyyy-MM-dd}-sm.xls";
         var client = new WebClient();
         try 
         {

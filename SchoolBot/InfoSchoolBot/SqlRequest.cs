@@ -4,7 +4,7 @@ namespace SchoolBot;
 
 public static class SqlRequest
 {
-    private static string dataBase =
+    private static readonly string DataBase =
         @$"Data Source = {Environment.CurrentDirectory.Replace(@"SchoolBot\InfoSchoolBot\bin\Debug\net6.0", "")}FoodDataBase\food_info.db";
 
     public static string? GetAnswer(RequestFormatter request)
@@ -13,7 +13,7 @@ public static class SqlRequest
             return "У Феди ошибка";
 
         using var connection =
-            new SqliteConnection(dataBase);
+            new SqliteConnection(DataBase);
         connection.Open();
         var sqlExpression = "SELECT * FROM " + request.Day;
         try
