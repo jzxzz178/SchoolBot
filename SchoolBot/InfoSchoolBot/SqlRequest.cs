@@ -15,7 +15,7 @@ public static class SqlRequest
         using var connection =
             new SqliteConnection(DataBase);
         connection.Open();
-        var sqlExpression = "SELECT * FROM " + request.Day;
+        var sqlExpression = "SELECT * FROM " + request.Day; 
         try
         {
             SqliteCommand command = new SqliteCommand(sqlExpression, connection);

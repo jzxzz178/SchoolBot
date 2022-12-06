@@ -1,4 +1,6 @@
 ﻿using Newtonsoft.Json;
+using Serilog;
+using ShoolBot;
 using Telegram.Bot;
 using Telegram.Bot.Extensions.Polling;
 using Telegram.Bot.Types;
@@ -15,7 +17,7 @@ public static class BotClient
     private const string BackButton = "Назад   ◀️";
 
     private static readonly ITelegramBotClient Bot =
-        new TelegramBotClient("5644651078:AAHSwqM07BhX-3N0qiL9ft3aUFKokfWrPOc");
+        new TelegramBotClient("5628215183:AAFeTuAoxldhloxF8yFzgUaC3GK04w28hOk");
 
     // Key: UserID, Value: selected Day
     private static readonly Dictionary<string, string?> DaySelectedByUser = new Dictionary<string, string?>();
@@ -42,15 +44,19 @@ public static class BotClient
         CancellationToken cancellationToken)
     {
         Console.WriteLine();
-        Console.WriteLine($"Type of request: {JsonConvert.SerializeObject(update.Type)}");
+        var request = JsonConvert.SerializeObject(update.Type);
+        
+        
 
         switch (update.Type)
         {
             case UpdateType.CallbackQuery:
-            {
+            { 
                 var requestFormatter = new RequestFormatter();
                 var userId = JsonConvert.SerializeObject(update.CallbackQuery?.From.Username);
                 var pressedButtonData = update.CallbackQuery?.Data;
+                
+                await DataBaseLog.Logger(userId, request);
 
                 Console.WriteLine(
                     $"UserID: {userId}; Nickname: " +
@@ -110,6 +116,8 @@ public static class BotClient
             {
                 var message = update.Message;
                 var userId = JsonConvert.SerializeObject(update.Message?.From?.Username);
+                
+                DataBaseLog.Logger(userId, request);
                 
                 userId = userId.Remove(0, 1).Remove(userId.Length - 2, 1);
                 Console.WriteLine($"UserID: {userId}; Nickname: " +
