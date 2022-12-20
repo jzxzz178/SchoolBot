@@ -1,6 +1,9 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Serilog;
 using ShoolBot;
+using SQLiteApp;
 using Telegram.Bot;
 using Telegram.Bot.Extensions.Polling;
 using Telegram.Bot.Types;
@@ -12,8 +15,18 @@ using static SchoolBot.MealType;
 
 namespace SchoolBot;
 
-public static class BotClient
+public interface IBot
 {
+    void Run();
+    /*void HandleUpdate();
+    void HandleError();*/
+}
+
+public class BotClient : IBot
+{
+    private readonly ILogger<IBot> log;
+    private readonly IConfiguration config; 
+    
     private const string BackButton = "Назад   ◀️";
 
     private static readonly ITelegramBotClient Bot =
@@ -22,10 +35,16 @@ public static class BotClient
     // Key: UserID, Value: selected Day
     private static readonly Dictionary<string, string?> DaySelectedByUser = new Dictionary<string, string?>();
 
-
-    public static void StartBot()
+    public BotClient(ILogger<IBot> log, IConfiguration config)
     {
-        Console.WriteLine("Запущен бот " + Bot.GetMeAsync().Result.FirstName);
+        this.log = log;
+        this.config = config;
+    }
+
+    public void Run()
+    {
+        var botName = Bot.GetMeAsync().Result.FirstName;
+        log.LogInformation("Запущен бот " + botName);
 
         var cancellationToken = new CancellationTokenSource().Token;
         var receiverOptions = new ReceiverOptions();
@@ -40,31 +59,30 @@ public static class BotClient
     }
 
 
-    private static async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update,
+    private async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update,
         CancellationToken cancellationToken)
     {
-        Console.WriteLine();
+        // Console.WriteLine();
         var request = JsonConvert.SerializeObject(update.Type);
-        
-        
+
 
         switch (update.Type)
         {
             case UpdateType.CallbackQuery:
-            { 
+            {
                 var requestFormatter = new RequestFormatter();
                 var userId = JsonConvert.SerializeObject(update.CallbackQuery?.From.Username);
                 var pressedButtonData = update.CallbackQuery?.Data;
-                
+
                 await DataBaseLog.Logger(userId, request);
 
-                Console.WriteLine(
+                log.LogInformation(
                     $"UserID: {userId}; Nickname: " +
                     $"{JsonConvert.SerializeObject(update.CallbackQuery?.From.FirstName)} " +
                     $"{JsonConvert.SerializeObject(update.CallbackQuery?.From.LastName)}");
 
 
-                Console.WriteLine($"Pressed button = {pressedButtonData}");
+                log.LogInformation($"Pressed button = {pressedButtonData}");
 
                 if (pressedButtonData == BackButton)
                 {
@@ -116,14 +134,16 @@ public static class BotClient
             {
                 var message = update.Message;
                 var userId = JsonConvert.SerializeObject(update.Message?.From?.Username);
-                
+
                 DataBaseLog.Logger(userId, request);
-                
+                // manager.AddLog(userId, request);
+                log.LogInformation(userId, request);
+
                 userId = userId.Remove(0, 1).Remove(userId.Length - 2, 1);
-                Console.WriteLine($"UserID: {userId}; Nickname: " +
-                                  $"{JsonConvert.SerializeObject(update.Message?.From?.FirstName)} " +
-                                  $"{JsonConvert.SerializeObject(update.Message?.From?.LastName)}");
-                Console.WriteLine($"Message: {message?.Text}");
+                log.LogInformation($"UserID: {userId}; Nickname: " +
+                                   $"{JsonConvert.SerializeObject(update.Message?.From?.FirstName)} " +
+                                   $"{JsonConvert.SerializeObject(update.Message?.From?.LastName)}");
+                log.LogInformation($"Message: {message?.Text}");
 
                 switch (message?.Text?.ToLower())
                 {

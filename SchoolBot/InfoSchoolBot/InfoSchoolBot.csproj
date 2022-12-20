@@ -9,7 +9,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Microsoft.Data.Sqlite.Core" Version="5.0.3" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.1" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.1" />
       <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.0" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.2-beta2" />
       <PackageReference Include="NLog" Version="5.1.0" />
@@ -23,6 +24,13 @@
       <PackageReference Include="SQLitePCLRaw.provider.winsqlite3" Version="2.1.3-pre20221111222311" />
       <PackageReference Include="Telegram.Bot" Version="18.0.0" />
       <PackageReference Include="Telegram.Bot.Extensions.Polling" Version="2.0.0-alpha.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="C:\Users\Fedor\.nuget\packages\nlog.config\4.7.15\contentFiles\any\any\NLog.config" />
+      <None Update="appsettings.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
 </Project>

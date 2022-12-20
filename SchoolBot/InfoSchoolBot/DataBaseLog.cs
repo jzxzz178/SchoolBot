@@ -36,7 +36,7 @@ namespace ShoolBot
                                         VALUES (@UserId,@RequestType)";
                 command.Parameters.Add(new SqliteParameter("@UserId", userId));
                 command.Parameters.Add(new SqliteParameter("@RequestType", requestType));
-                int number = command.ExecuteNonQuery();
+                var number = command.ExecuteNonQuery();
                 // Console.WriteLine($"Добавлено объектов: {number}");
             }
             
