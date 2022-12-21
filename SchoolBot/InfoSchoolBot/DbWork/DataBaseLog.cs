@@ -1,8 +1,6 @@
 ﻿using Microsoft.Data.Sqlite;
-using System;
-using System.IO;
 
-namespace ShoolBot
+namespace SchoolBot.DbWork
 {
     public class DataBaseLog
     {

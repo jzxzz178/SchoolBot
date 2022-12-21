@@ -1,9 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Serilog;
-using ShoolBot;
-using SQLiteApp;
+using SchoolBot.DbWork;
 using Telegram.Bot;
 using Telegram.Bot.Extensions.Polling;
 using Telegram.Bot.Types;
@@ -73,8 +71,6 @@ public class BotClient : IBot
                 var requestFormatter = new RequestFormatter();
                 var userId = JsonConvert.SerializeObject(update.CallbackQuery?.From.Username);
                 var pressedButtonData = update.CallbackQuery?.Data;
-
-                await DataBaseLog.Logger(userId, request);
 
                 log.LogInformation(
                     $"UserID: {userId}; Nickname: " +

@@ -1,6 +1,6 @@
 ﻿using Microsoft.Data.Sqlite;
 
-namespace SchoolBot;
+namespace SchoolBot.DbWork;
 
 public static class SqlRequest
 {
