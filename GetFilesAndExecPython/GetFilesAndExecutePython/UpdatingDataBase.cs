@@ -18,7 +18,7 @@ static class UpdatingDataBase
             // путь до питона укажите, если у вас другой
             var psi = new ProcessStartInfo
             {
-                FileName = @"C:\Program Files\Python310\python.exe"
+                FileName = @"C:\Users\user\AppData\Local\Programs\Python\Python311\python.exe"
             };
 
             // var currentDirectory = Directory.GetCurrentDirectory();

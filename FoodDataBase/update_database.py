@@ -40,10 +40,10 @@ def format_info(key, values):
 def update_database(db, parsed_food):
     c = db.cursor()
 
-    for key, val in parsed_food.items():
-        command = f'INSERT INTO "{days_of_week[date.isoweekday(today)]}" VALUES(?, ?)'
-        pair = (key, format_info(key, val))
-        c.execute(command, pair)
+    command = 'INSERT INTO Menu VALUES (?, ?, ?)'
+    values = (days_of_week[date.isoweekday(today)], format_info('Завтрак', parsed_food['Завтрак']),
+              format_info('Обед', parsed_food['Обед']))
+    c.execute(command, values)
 
     db.commit()
 
@@ -54,8 +54,9 @@ today = [int(e) for e in today.split("-")]
 today = datetime(today[0], today[1], today[2])
 dir_path = sys.argv[2]
 path = pathlib.Path(dir_path, "excels", file)
+db_path = dir_path.replace(r"FoodDataBase", r"SchoolBot\InfoSchoolBot\bin\Debug\net6.0")
 if os.path.exists(str(path)):
-    db = sqlite3.connect(dir_path + r'\food_info.db')
+    db = sqlite3.connect(db_path + r'\Base.db')
     parsed_excel = parse_food_from_excel(path)
     update_database(db, parsed_excel)
     db.close()
