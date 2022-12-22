@@ -10,6 +10,7 @@ static class UpdatingDataBase
     static void Main(string[] args)
     {
         var days = GetCurrentDays();
+        
         foreach (var day in days)
         {
             var isDownloadWasCorrect = DownloadFileFromSite(day);
@@ -22,15 +23,16 @@ static class UpdatingDataBase
             };
 
             // var currentDirectory = Directory.GetCurrentDirectory();
-            var clearByDateScript = @$"{ScriptsDirectory}\clear_database_by_date.py";
+            // var clearByDateScript = @$"{ScriptsDirectory}\clear_database_by_date.py";
             var updateDataBaseScript = @$"{ScriptsDirectory}\update_database.py";
 
             var arg1 = $" {day:yyyy-MM-dd}";
             var arg2 = $" {ScriptsDirectory}";
-
-            psi.Arguments = clearByDateScript + arg1 + arg2;
+            
             psi.UseShellExecute = false;
-            using Process clearProcess = Process.Start(psi);
+            
+            /*psi.Arguments = clearByDateScript + arg1 + arg2;
+            using Process clearProcess = Process.Start(psi);*/
 
             psi.Arguments = updateDataBaseScript + arg1 + arg2;
             using Process updateProcess = Process.Start(psi);

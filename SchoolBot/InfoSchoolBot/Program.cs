@@ -20,13 +20,10 @@ static class Program
             .CreateLogger();
 
         var host = Host.CreateDefaultBuilder()
-            .ConfigureServices((context, services) => { services.AddTransient<IBot, BotClient>(); })
+            .ConfigureServices((context, services) => { services.AddSingleton<IBot, BotClient>(); })
             .UseSerilog()
             .Build();
 
-        DbManager.AddDayMenu("Понедельник", "кашка", "супик");
-        Console.WriteLine(DbManager.GetBreakfast("Понедельник"));
-        DbManager.AddDayMenu("Понедельник","картоха","мяса");
         var bot = ActivatorUtilities.CreateInstance<BotClient>(host.Services);
         bot.Run();
     }

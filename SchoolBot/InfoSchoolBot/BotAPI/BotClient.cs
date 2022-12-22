@@ -13,12 +13,7 @@ using static SchoolBot.MealType;
 
 namespace SchoolBot;
 
-public interface IBot
-{
-    void Run();
-    /*void HandleUpdate();
-    void HandleError();*/
-}
+
 
 public class BotClient : IBot
 {
@@ -57,7 +52,7 @@ public class BotClient : IBot
     }
 
 
-    private async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update,
+    public async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update,
         CancellationToken cancellationToken)
     {
         // Console.WriteLine();
@@ -204,7 +199,7 @@ public class BotClient : IBot
         }
     }
 
-    private static Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception,
+    public Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception,
         CancellationToken cancellationToken)
     {
         Console.WriteLine(JsonConvert.SerializeObject(exception));
