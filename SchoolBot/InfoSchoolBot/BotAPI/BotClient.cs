@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿/*using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using SchoolBot.DbWork;
@@ -264,4 +264,4 @@ public class BotClient : IBot
 
         return inlineKeyboard;
     }
-}
+}*/

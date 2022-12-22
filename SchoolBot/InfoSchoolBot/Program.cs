@@ -24,14 +24,15 @@ static class Program
         var host = Host.CreateDefaultBuilder()
             .ConfigureServices((context, services) =>
             {
-                services.AddSingleton<IBot, BotClient>();
+                services.AddSingleton<IBot, Bot>();
+                services.AddSingleton<IMenuManager, MenuManager>();
                 services.AddSingleton<IDatabaseManager, DbManager>();
             })
             .UseSerilog()
             .Build();
 
-        var bot = ActivatorUtilities.CreateInstance<BotClient>(host.Services);
-        bot.Run();
+        var menuManager = ActivatorUtilities.CreateInstance<MenuManager>(host.Services);
+        menuManager.Bot.Value.Run();
     }
 
     private static void BuildConfig(IConfigurationBuilder builder)
