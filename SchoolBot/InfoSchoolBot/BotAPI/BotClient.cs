@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using SchoolBot.DbWork;
+using SchoolBot.DbWork.Manager_Interfaces;
 using Telegram.Bot;
 using Telegram.Bot.Extensions.Polling;
 using Telegram.Bot.Types;
@@ -11,7 +12,7 @@ using static SchoolBot.DaysOfWeek;
 using static SchoolBot.MealType;
 
 
-namespace SchoolBot;
+namespace SchoolBot.BotAPI;
 
 
 
@@ -28,7 +29,7 @@ public class BotClient : IBot
     // Key: UserID, Value: selected Day
     private static readonly Dictionary<string, string?> DaySelectedByUser = new Dictionary<string, string?>();
 
-    public BotClient(ILogger<IBot> log, IConfiguration config)
+    public BotClient(ILogger<IBot> log, IConfiguration config, IDatabaseManager manager)
     {
         this.log = log;
         this.config = config;

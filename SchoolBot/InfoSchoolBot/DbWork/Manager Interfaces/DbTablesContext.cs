@@ -1,9 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
-namespace SchoolBot.DbWork
+namespace SchoolBot.DbWork.Manager_Interfaces
 {
-    public class DbTablesContext : DbContext
+    public sealed class DbTablesContext : DbContext
     {
         public DbSet<Log> Logs => Set<Log>();
         public DbSet<Menu> Menu => Set<Menu>();

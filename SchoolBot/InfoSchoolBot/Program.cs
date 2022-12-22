@@ -1,7 +1,9 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using SchoolBot.BotAPI;
 using SchoolBot.DbWork;
+using SchoolBot.DbWork.Manager_Interfaces;
 using Serilog;
 using Log = Serilog.Log;
 
@@ -20,7 +22,11 @@ static class Program
             .CreateLogger();
 
         var host = Host.CreateDefaultBuilder()
-            .ConfigureServices((context, services) => { services.AddSingleton<IBot, BotClient>(); })
+            .ConfigureServices((context, services) =>
+            {
+                services.AddSingleton<IBot, BotClient>();
+                services.AddSingleton<IDatabaseManager, DbManager>();
+            })
             .UseSerilog()
             .Build();
 
