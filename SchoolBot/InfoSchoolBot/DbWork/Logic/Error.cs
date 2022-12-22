@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace SchoolBot.DbWork;
+namespace SchoolBot.DbWork.Logic;
 
 public class Error
 {

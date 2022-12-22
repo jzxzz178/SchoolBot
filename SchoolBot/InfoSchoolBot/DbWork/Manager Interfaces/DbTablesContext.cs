@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SchoolBot.DbWork.Logic;
 
 namespace SchoolBot.DbWork.Manager_Interfaces
 {

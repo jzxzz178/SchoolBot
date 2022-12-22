@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace SchoolBot;
+namespace SchoolBot.BotAPI.Buttons;
 
 public enum DaysOfWeek
 {

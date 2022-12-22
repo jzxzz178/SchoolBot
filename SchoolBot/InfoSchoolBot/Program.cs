@@ -1,8 +1,9 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using SchoolBot.BotAPI;
-using SchoolBot.DbWork;
+using SchoolBot.BotAPI.Buttons;
+using SchoolBot.BotAPI.Interfaces;
+using SchoolBot.BotAPI.Logic;
 using SchoolBot.DbWork.Manager_Interfaces;
 using Serilog;
 using Log = Serilog.Log;
@@ -25,14 +26,15 @@ static class Program
             .ConfigureServices((context, services) =>
             {
                 services.AddSingleton<IBot, Bot>();
+                services.AddSingleton<IButtons, Buttons>();
                 services.AddSingleton<IMenuManager, MenuManager>();
                 services.AddSingleton<IDatabaseManager, DbManager>();
             })
             .UseSerilog()
             .Build();
 
-        var menuManager = ActivatorUtilities.CreateInstance<MenuManager>(host.Services);
-        menuManager.Bot.Value.Run();
+        var bot = ActivatorUtilities.CreateInstance<Bot>(host.Services);
+        bot.Run();
     }
 
     private static void BuildConfig(IConfigurationBuilder builder)

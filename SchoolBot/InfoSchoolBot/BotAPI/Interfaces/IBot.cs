@@ -1,8 +1,4 @@
-﻿using SchoolBot.BotAPI.Buttons;
-using Telegram.Bot;
-using Telegram.Bot.Types;
-
-namespace SchoolBot.BotAPI;
+﻿namespace SchoolBot.BotAPI.Interfaces;
 
 public interface IBot
 {

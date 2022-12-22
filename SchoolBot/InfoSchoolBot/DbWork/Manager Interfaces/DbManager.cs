@@ -1,4 +1,6 @@
-﻿namespace SchoolBot.DbWork.Manager_Interfaces;
+﻿using SchoolBot.DbWork.Logic;
+
+namespace SchoolBot.DbWork.Manager_Interfaces;
 
 public class DbManager : IDatabaseManager
 {

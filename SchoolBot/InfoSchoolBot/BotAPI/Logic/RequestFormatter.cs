@@ -1,4 +1,6 @@
-﻿namespace SchoolBot.DbWork;
+﻿using SchoolBot.BotAPI.Buttons;
+
+namespace SchoolBot.BotAPI.Logic;
 
 public class RequestFormatter
 {

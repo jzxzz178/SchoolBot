@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-namespace SchoolBot.DbWork.Manager_Interfaces;
+﻿namespace SchoolBot.DbWork.Manager_Interfaces;
 
 public interface IDatabaseManager
 {
