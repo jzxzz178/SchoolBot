@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace SchoolBot.DbWork.Logic;
+namespace SchoolBot.DbWork.Logic.DbTableClasses;
 
 public class Menu
 {

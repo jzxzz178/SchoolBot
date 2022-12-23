@@ -1,4 +1,6 @@
 ﻿using SchoolBot.DbWork.Logic;
+using SchoolBot.DbWork.Logic.DbCommunicators;
+using SchoolBot.DbWork.Logic.DbTableClasses;
 
 namespace SchoolBot.DbWork.Manager_Interfaces;
 

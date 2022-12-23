@@ -3,6 +3,7 @@
 public interface IMenuManager
 {
     string GetMenu(string? userId, string? day, string meal);
-    Lazy<IBot> Bot { get; set; }
-    void Run();
+    public void MakeLog(string userId, string requestType);
+    /*Lazy<IBot> Bot { get; set; }
+    void Run();*/
 }

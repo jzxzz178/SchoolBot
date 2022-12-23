@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SchoolBot.DbWork.Logic;
+using SchoolBot.DbWork.Logic.DbTableClasses;
 
-namespace SchoolBot.DbWork.Manager_Interfaces
+namespace SchoolBot.DbWork.Logic.DbCommunicators
 {
     public sealed class DbTablesContext : DbContext
     {

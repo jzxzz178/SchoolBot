@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using SchoolBot.BotAPI.Buttons;
 using SchoolBot.BotAPI.Interfaces;
 using Telegram.Bot;
@@ -13,18 +14,20 @@ namespace SchoolBot.BotAPI.Logic;
 public class Bot : IBot
 {
     private readonly ITelegramBotClient bot;
-    private readonly MenuManager menuManager;
+    private readonly IMenuManager menuManager;
     private readonly CancellationToken cancellationToken;
     public ISendMessage MessageSender { get; set; }
     public IButtons ButtonCreate { get; set; }
 
     // Key: UserID, Value: selected Day
     private static readonly Dictionary<string, string?> DaySelectedByUser = new Dictionary<string, string?>();
+    private readonly ILogger logger;
 
-    public Bot(IButtons buttonCreate, MenuManager menuManager)
+    public Bot(IButtons buttonCreate, IMenuManager menuManager, ILogger<Bot> logger)
     {
         ButtonCreate = buttonCreate;
         this.menuManager = menuManager;
+        this.logger = logger;
         cancellationToken = new CancellationTokenSource().Token;
         bot = new TelegramBotClient("5628215183:AAFeTuAoxldhloxF8yFzgUaC3GK04w28hOk");
         MessageSender = new MessageSender(bot, cancellationToken);
@@ -32,8 +35,8 @@ public class Bot : IBot
 
     public void Run()
     {
-        // var botName = bot.GetMeAsync().Result.FirstName;
-        // log.LogInformation("Запущен бот " + botName);
+        var botName = bot.GetMeAsync(cancellationToken: cancellationToken).Result.FirstName;
+        logger.LogInformation("Запущен бот {Name}", botName);
 
         var receiverOptions = new ReceiverOptions();
 
@@ -55,8 +58,9 @@ public class Bot : IBot
             case UpdateType.Message:
             {
                 var message = update.Message;
-                // var userId = JsonConvert.SerializeObject(update.Message?.From?.Username);
-                // userId = userId.Remove(0, 1).Remove(userId.Length - 2, 1);
+                var userId = JsonConvert.SerializeObject(update.Message?.From?.Username);
+                userId = userId.Remove(0, 1).Remove(userId.Length - 2, 1);
+                logger.LogInformation("{Id}: {Request}", userId, request);
                 switch (message?.Text?.ToLower())
                 {
                     case "/start":
@@ -80,7 +84,9 @@ public class Bot : IBot
             case UpdateType.CallbackQuery:
             {
                 var userId = JsonConvert.SerializeObject(update.CallbackQuery?.From.Username);
+                userId = userId.Remove(0, 1).Remove(userId.Length - 2, 1);
                 var pressedButtonData = update.CallbackQuery?.Data;
+                logger.LogInformation("{Id}: {Request}", userId, request);
                 var requestFormatter = new RequestFormatter();
 
                 if (pressedButtonData == BackButton)
@@ -119,7 +125,7 @@ public class Bot : IBot
 
                     menuManager.MakeLog(userId, request);
                     await MessageSender.SendTextMessage(update.CallbackQuery?.Message?.Chat.Id!,
-                        menuManager.GetMenu(userId, requestFormatter.Day, requestFormatter.MealType));
+                        menuManager.GetMenu(userId, requestFormatter.Day, requestFormatter.MealType!));
 
                     // Эта строка нужна для того, чтобы после нажатия на кнопку исчезала
                     // анимация подгрузки в виде часов на этой кнопке

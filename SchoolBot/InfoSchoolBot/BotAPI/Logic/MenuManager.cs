@@ -5,19 +5,19 @@ namespace SchoolBot.BotAPI.Logic;
 
 public class MenuManager : IMenuManager
 {
-    public Lazy<IBot> Bot { get; set; }
+    // public Lazy<IBot> Bot { get; set; }
     private readonly IDatabaseManager dbManager;
 
-    public MenuManager(Lazy<IBot> bot, IDatabaseManager dbManager)
+    public MenuManager( /*Lazy<IBot> bot,*/ IDatabaseManager dbManager)
     {
-        Bot = bot;
+        // Bot = bot;
         this.dbManager = dbManager;
     }
 
-    public void Run()
+    /*public void Run()
     {
         Bot.Value.Run();
-    }
+    }*/
 
     public string GetMenu(string? userId, string? day, string? meal)
     {
@@ -29,6 +29,4 @@ public class MenuManager : IMenuManager
     {
         dbManager.AddLog(userId, requestType);
     }
-
-    
 }
