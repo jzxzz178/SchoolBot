@@ -34,4 +34,8 @@
       <None Remove="C:\Users\pichu_8ed7d2l\.nuget\packages\nlog.config\4.7.15\contentFiles\any\any\NLog.config" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="DbWork\Logic\DbUpdate" />
+    </ItemGroup>
+
 </Project>

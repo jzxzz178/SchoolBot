@@ -1,16 +1,15 @@
-﻿using SchoolBot.DbWork.Logic;
-using SchoolBot.DbWork.Logic.DbCommunicators;
-using SchoolBot.DbWork.Logic.DbTableClasses;
+﻿using SchoolBot.DbWork.Logic.DbTableClasses;
+using SchoolBot.DbWork.Manager_Interfaces;
 
-namespace SchoolBot.DbWork.Manager_Interfaces;
+namespace SchoolBot.DbWork.Logic.DbCommunicators;
 
 public class DbManager : IDatabaseManager
 {
-    public DbTablesContext DatabaseContext { get; set; }
+    private AbstractDbTablesContext DatabaseContext { get; }
 
-    public DbManager()
+    public DbManager(AbstractDbTablesContext tablesContext)
     {
-        DatabaseContext = new DbTablesContext();
+        DatabaseContext = tablesContext;
     }
 
     public void AddLog(string idUser, string requestType)

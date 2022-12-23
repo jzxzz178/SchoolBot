@@ -2,8 +2,6 @@
 
 public interface IMenuManager
 {
-    string GetMenu(string? userId, string? day, string meal);
+    string GetMenu(string? day, string meal);
     public void MakeLog(string userId, string requestType);
-    /*Lazy<IBot> Bot { get; set; }
-    void Run();*/
 }

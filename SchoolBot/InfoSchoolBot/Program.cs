@@ -4,6 +4,7 @@ using Microsoft.Extensions.Hosting;
 using SchoolBot.BotAPI.Buttons;
 using SchoolBot.BotAPI.Interfaces;
 using SchoolBot.BotAPI.Logic;
+using SchoolBot.DbWork.Logic.DbCommunicators;
 using SchoolBot.DbWork.Manager_Interfaces;
 using Serilog;
 using Log = Serilog.Log;
@@ -29,6 +30,7 @@ static class Program
                 services.AddSingleton<IButtons, Buttons>();
                 services.AddSingleton<IMenuManager, MenuManager>();
                 services.AddSingleton<IDatabaseManager, DbManager>();
+                services.AddSingleton<AbstractDbTablesContext, DbTablesContext>();
             })
             .UseSerilog()
             .Build();

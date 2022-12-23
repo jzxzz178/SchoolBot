@@ -1,5 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Net;
+using SchoolBot.DbWork.Logic.DbCommunicators;
+using SchoolBot.DbWork.Manager_Interfaces;
 
 namespace GetFilesAndExecPython;
 
@@ -10,7 +12,7 @@ static class UpdatingDataBase
     static void Main(string[] args)
     {
         var days = GetCurrentDays();
-        
+
         foreach (var day in days)
         {
             var isDownloadWasCorrect = DownloadFileFromSite(day);
@@ -19,7 +21,7 @@ static class UpdatingDataBase
             // путь до питона укажите, если у вас другой
             var psi = new ProcessStartInfo
             {
-                FileName = @"C:\Users\user\AppData\Local\Programs\Python\Python311\python.exe"
+                FileName = @"C:\Python 37\python.exe"
             };
 
             // var currentDirectory = Directory.GetCurrentDirectory();

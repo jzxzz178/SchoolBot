@@ -1,23 +1,26 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SchoolBot.DbWork.Logic.DbTableClasses;
+using Microsoft.Extensions.Configuration;
+using SchoolBot.DbWork.Manager_Interfaces;
 
 namespace SchoolBot.DbWork.Logic.DbCommunicators
 {
-    public sealed class DbTablesContext : DbContext
+    public sealed class DbTablesContext : AbstractDbTablesContext
     {
-        public DbSet<Log> Logs => Set<Log>();
+        /*public DbSet<Log> Logs => Set<Log>();
         public DbSet<Menu> Menu => Set<Menu>();
-        public DbSet<Error> Errors => Set<Error>();
+        public DbSet<Error> Errors => Set<Error>();*/
+        private readonly IConfiguration? config;
 
 
-        public DbTablesContext()
+        public DbTablesContext(IConfiguration? config = null)
         {
+            this.config = config;
             Database.EnsureCreated();
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlite("Data Source=Base.db");
+            optionsBuilder.UseSqlite(config!.GetValue<string>("DATABASE_SOURCE"));
         }
     }
 }
