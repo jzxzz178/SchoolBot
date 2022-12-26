@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel;
-using System.Reflection;
 
-namespace SchoolBot;
+namespace SchoolBot.BotAPI.Buttons;
 
 public static class EnumHelper
 {
