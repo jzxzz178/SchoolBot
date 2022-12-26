@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using SchoolBot.BotAPI.Buttons;
 using SchoolBot.BotAPI.Interfaces;
+using SchoolBot.DbWork.Manager_Interfaces;
 using Telegram.Bot;
 using Telegram.Bot.Extensions.Polling;
 using Telegram.Bot.Types;
@@ -24,7 +25,8 @@ public class Bot : IBot
     private static readonly Dictionary<string, string?> DaySelectedByUser = new Dictionary<string, string?>();
     private readonly ILogger logger;
 
-    public Bot(IButtons buttonCreate, IMenuManager menuManager, ILogger<Bot> logger, IConfiguration configuration)
+    public Bot(IButtons buttonCreate, IMenuManager menuManager, ILogger<Bot> logger, IConfiguration configuration,
+        IDbUpdateManager dbUpdateManager)
     {
         ButtonCreate = buttonCreate;
         this.menuManager = menuManager;
@@ -32,6 +34,7 @@ public class Bot : IBot
         cancellationToken = new CancellationTokenSource().Token;
         bot = new TelegramBotClient(configuration.GetValue<string>("BOT_API_TOKEN")!);
         MessageSender = new MessageSender(bot, cancellationToken);
+        dbUpdateManager.ClearAndUpdateDb();
     }
 
     public void Run()
@@ -142,6 +145,7 @@ public class Bot : IBot
     private Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception,
         CancellationToken cancelToken)
     {
-        throw new NotImplementedException();
+        logger.LogInformation("{Exception}", JsonConvert.SerializeObject(exception));
+        return Task.CompletedTask;
     }
 }
