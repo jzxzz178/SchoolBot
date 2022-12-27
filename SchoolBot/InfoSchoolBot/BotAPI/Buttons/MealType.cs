@@ -6,7 +6,6 @@ public enum MealType
 {
     [Description("Завтрак")] Breakfast,
     [Description("Обед")] Lunch,
-    // [Description("Буфет")] Buffet
 }
 
 public static class MealTypeExtensions

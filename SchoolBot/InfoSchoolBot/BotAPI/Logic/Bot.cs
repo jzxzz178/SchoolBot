@@ -18,22 +18,20 @@ public class Bot : IBot
     private readonly ITelegramBotClient bot;
     private readonly IBotManager botManager;
     private readonly CancellationToken cancellationToken;
-    public ISendMessage MessageSender { get; set; }
-    public IButtons ButtonCreate { get; set; }
+    private readonly ISendMessage messageSender;
+    private readonly ILogger logger;
 
     // Key: UserID, Value: selected Day
     private static readonly Dictionary<string, string?> DaySelectedByUser = new Dictionary<string, string?>();
-    private readonly ILogger logger;
 
-    public Bot(IButtons buttonCreate, IBotManager botManager, ILogger<Bot> logger, IConfiguration configuration,
+    public Bot(IBotManager botManager, ILogger<Bot> logger, IConfiguration configuration,
         IDbUpdateManager dbUpdateManager)
     {
-        ButtonCreate = buttonCreate;
         this.botManager = botManager;
         this.logger = logger;
         cancellationToken = new CancellationTokenSource().Token;
         bot = new TelegramBotClient(configuration.GetValue<string>("BOT_API_TOKEN")!);
-        MessageSender = new MessageSender(bot, cancellationToken);
+        messageSender = new MessageSender(bot, cancellationToken);
         dbUpdateManager.ClearAndUpdateDb();
     }
 
@@ -50,6 +48,7 @@ public class Bot : IBot
             receiverOptions,
             cancellationToken
         );
+
         Console.ReadLine();
     }
 
@@ -68,17 +67,17 @@ public class Bot : IBot
                 switch (message?.Text?.ToLower())
                 {
                     case "/start":
-                        await MessageSender.SendTextMessage(update.Message!.Chat.Id,
+                        await messageSender.SendTextMessage(update.Message!.Chat.Id,
                             "Нажмите на кнопку или отправьте в чат 'Узнать меню'", GetReplyKeyboardWithSchedule());
                         break;
 
                     case "узнать меню":
-                        await MessageSender.SendTextMessage(update.Message!.Chat.Id,
+                        await messageSender.SendTextMessage(update.Message!.Chat.Id,
                             "Выберите день", GetInlineKeyboardWithDays());
                         break;
 
                     default:
-                        await MessageSender.SendTextMessage(update.Message!.Chat.Id,
+                        await messageSender.SendTextMessage(update.Message!.Chat.Id,
                             "Нажмите на кнопку или отправьте в чат 'Узнать меню'", GetReplyKeyboardWithSchedule());
                         break;
                 }
@@ -98,7 +97,7 @@ public class Bot : IBot
                     // забыть день, выбранный до этого момента
                     DaySelectedByUser.Remove(userId);
 
-                    await MessageSender.EditSentMessageAndMarkup(update.CallbackQuery?.Message!, "Выберите день",
+                    await messageSender.EditSentMessageAndMarkup(update.CallbackQuery?.Message!, "Выберите день",
                         GetInlineKeyboardWithDays());
                     break;
                 }
@@ -108,7 +107,7 @@ public class Bot : IBot
                     // Здесь надо запомнить pressedButtonData - какой день выбрал пользователь
                     DaySelectedByUser[userId] = pressedButtonData;
 
-                    await MessageSender.EditSentMessageAndMarkup(update.CallbackQuery?.Message!, "Выберите время",
+                    await messageSender.EditSentMessageAndMarkup(update.CallbackQuery?.Message!, "Выберите время",
                         GetInlineKeyboardWithTimeOfMeal());
                     break;
                 }
@@ -123,12 +122,12 @@ public class Bot : IBot
                     }
                     else
                     {
-                        await MessageSender.SendExceptionMessage(update.CallbackQuery?.Message?.Chat.Id!);
+                        await messageSender.SendExceptionMessage(update.CallbackQuery?.Message?.Chat.Id!);
                         break;
                     }
 
                     botManager.MakeLog(userId, request);
-                    await MessageSender.SendTextMessage(update.CallbackQuery?.Message?.Chat.Id!,
+                    await messageSender.SendTextMessage(update.CallbackQuery?.Message?.Chat.Id!,
                         botManager.GetMenu(requestFormatter.Day, requestFormatter.MealType!));
 
                     // Эта строка нужна для того, чтобы после нажатия на кнопку исчезала

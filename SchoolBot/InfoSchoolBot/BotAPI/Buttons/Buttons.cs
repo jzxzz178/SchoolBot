@@ -6,7 +6,7 @@ using static SchoolBot.BotAPI.Interfaces.IConstants;
 
 namespace SchoolBot.BotAPI.Buttons;
 
-public class Buttons : IButtons
+public static class Buttons
 {
     public static ReplyKeyboardMarkup GetReplyKeyboardWithSchedule()
     {
