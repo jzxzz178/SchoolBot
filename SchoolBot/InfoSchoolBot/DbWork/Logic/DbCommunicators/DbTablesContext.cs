@@ -6,11 +6,7 @@ namespace SchoolBot.DbWork.Logic.DbCommunicators
 {
     public sealed class DbTablesContext : AbstractDbTablesContext
     {
-        /*public DbSet<Log> Logs => Set<Log>();
-        public DbSet<Menu> Menu => Set<Menu>();
-        public DbSet<Error> Errors => Set<Error>();*/
         private readonly IConfiguration? config;
-
 
         public DbTablesContext(IConfiguration? config = null)
         {
