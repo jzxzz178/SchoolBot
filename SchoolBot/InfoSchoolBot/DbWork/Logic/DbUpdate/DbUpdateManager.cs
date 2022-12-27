@@ -6,20 +6,20 @@ namespace SchoolBot.DbWork.Logic.DbUpdate;
 
 public class DbUpdateManager : IDbUpdateManager
 {
-    private IDatabaseManager DatabaseManager { get; set; }
+    private readonly IMenuDataManager menuDataManager;
 
     private static readonly string ScriptsDirectory =
         @$"{Environment.CurrentDirectory.Replace(@"SchoolBot\InfoSchoolBot\bin\Debug\net6.0", "")}FoodDataBase";
 
-    public DbUpdateManager(IDatabaseManager databaseManager)
+    public DbUpdateManager(IMenuDataManager menuDataManager)
     {
-        DatabaseManager = databaseManager;
+        this.menuDataManager = menuDataManager;
     }
 
     public void ClearAndUpdateDb()
     {
         var days = GetCurrentDays();
-        DatabaseManager.CleanMenu();
+        menuDataManager.CleanMenu();
 
         foreach (var day in days)
         {

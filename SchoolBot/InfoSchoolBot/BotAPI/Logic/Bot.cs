@@ -16,7 +16,7 @@ namespace SchoolBot.BotAPI.Logic;
 public class Bot : IBot
 {
     private readonly ITelegramBotClient bot;
-    private readonly IMenuManager menuManager;
+    private readonly IBotManager botManager;
     private readonly CancellationToken cancellationToken;
     public ISendMessage MessageSender { get; set; }
     public IButtons ButtonCreate { get; set; }
@@ -25,11 +25,11 @@ public class Bot : IBot
     private static readonly Dictionary<string, string?> DaySelectedByUser = new Dictionary<string, string?>();
     private readonly ILogger logger;
 
-    public Bot(IButtons buttonCreate, IMenuManager menuManager, ILogger<Bot> logger, IConfiguration configuration,
+    public Bot(IButtons buttonCreate, IBotManager botManager, ILogger<Bot> logger, IConfiguration configuration,
         IDbUpdateManager dbUpdateManager)
     {
         ButtonCreate = buttonCreate;
-        this.menuManager = menuManager;
+        this.botManager = botManager;
         this.logger = logger;
         cancellationToken = new CancellationTokenSource().Token;
         bot = new TelegramBotClient(configuration.GetValue<string>("BOT_API_TOKEN")!);
@@ -127,9 +127,9 @@ public class Bot : IBot
                         break;
                     }
 
-                    menuManager.MakeLog(userId, request);
+                    botManager.MakeLog(userId, request);
                     await MessageSender.SendTextMessage(update.CallbackQuery?.Message?.Chat.Id!,
-                        menuManager.GetMenu(requestFormatter.Day, requestFormatter.MealType!));
+                        botManager.GetMenu(requestFormatter.Day, requestFormatter.MealType!));
 
                     // Эта строка нужна для того, чтобы после нажатия на кнопку исчезала
                     // анимация подгрузки в виде часов на этой кнопке

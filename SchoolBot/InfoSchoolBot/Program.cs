@@ -29,8 +29,11 @@ static class Program
             {
                 services.AddSingleton<IBot, Bot>();
                 services.AddSingleton<IButtons, Buttons>();
-                services.AddSingleton<IMenuManager, MenuManager>();
-                services.AddSingleton<IDatabaseManager, DbManager>();
+                services.AddSingleton<IBotManager, BotManager>();
+                services.AddSingleton<IMenuDataManager, MenuDataManager>();
+                services.AddSingleton<IUserLogManger, UserLogManager>();
+                services.AddSingleton<IErrorLogManager, ErrorLogManager>();
+                // services.AddSingleton<IDatabaseManager, DbManager>();
                 services.AddSingleton<IDbUpdateManager, DbUpdateManager>();
                 services.AddSingleton<AbstractDbTablesContext, DbTablesContext>();
             })
