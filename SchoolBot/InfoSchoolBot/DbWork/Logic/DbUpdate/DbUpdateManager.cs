@@ -7,13 +7,15 @@ namespace SchoolBot.DbWork.Logic.DbUpdate;
 public class DbUpdateManager : IDbUpdateManager
 {
     private readonly IMenuDataManager menuDataManager;
+    private readonly IErrorLogManager errorLogManager;
 
     private static readonly string ScriptsDirectory =
         @$"{Environment.CurrentDirectory.Replace(@"SchoolBot\InfoSchoolBot\bin\Debug\net6.0", "")}FoodDataBase";
 
-    public DbUpdateManager(IMenuDataManager menuDataManager)
+    public DbUpdateManager(IMenuDataManager menuDataManager, IErrorLogManager errorLogManager)
     {
         this.menuDataManager = menuDataManager;
+        this.errorLogManager = errorLogManager;
     }
 
     public void ClearAndUpdateDb()
@@ -48,7 +50,7 @@ public class DbUpdateManager : IDbUpdateManager
         }
     }
 
-    private static bool DownloadFileFromSite(DateTime date)
+    private bool DownloadFileFromSite(DateTime date)
     {
         var address = $"https://xn--47-6kclvec3aj7p.xn--80acgfbsl1azdqr.xn--p1ai/food/{date:yyyy-MM-dd}-sm.xls";
         var localFileName = $"{ScriptsDirectory}\\excels\\{date:yyyy-MM-dd}-sm.xls";
@@ -58,9 +60,22 @@ public class DbUpdateManager : IDbUpdateManager
             client.DownloadFile(address, localFileName);
             return true;
         }
+        catch (WebException ex)
+        {
+            if (ex.Status == WebExceptionStatus.ProtocolError &&
+                ex.Response != null)
+            {
+                var resp = (HttpWebResponse) ex.Response;
+                if (resp.StatusCode == HttpStatusCode.NotFound)
+                    return false;
+            }
+
+            errorLogManager.LoggingError(ex.Message);
+            return false;
+        }
         catch (Exception e)
         {
-            // Console.WriteLine(e);
+            errorLogManager.LoggingError(e.Message);
             return false;
         }
     }
