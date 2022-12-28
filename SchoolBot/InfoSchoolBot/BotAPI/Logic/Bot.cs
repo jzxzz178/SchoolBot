@@ -5,7 +5,7 @@ using SchoolBot.BotAPI.Buttons;
 using SchoolBot.BotAPI.Interfaces;
 using SchoolBot.DbWork.Manager_Interfaces;
 using Telegram.Bot;
-using Telegram.Bot.Extensions.Polling;
+using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using static SchoolBot.BotAPI.Buttons.Buttons;
