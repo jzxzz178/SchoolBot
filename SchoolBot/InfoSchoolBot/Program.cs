@@ -29,6 +29,7 @@ static class Program
             {
                 services.AddSingleton<IBot, Bot>();
                 services.AddSingleton<IBotManager, BotManager>();
+                services.AddScoped<ISendMessage, MessageSender>();
                 services.AddSingleton<IUserLogManger, UserLogManager>();
                 services.AddSingleton<IMenuDataManager, MenuDataManager>();
                 services.AddSingleton<IErrorLogManager, ErrorLogManager>();

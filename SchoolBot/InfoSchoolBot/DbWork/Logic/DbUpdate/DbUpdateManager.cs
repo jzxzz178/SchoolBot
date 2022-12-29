@@ -33,18 +33,13 @@ public class DbUpdateManager : IDbUpdateManager
                 FileName = @"python.exe"
             };
 
-            // var currentDirectory = Directory.GetCurrentDirectory();
-            // var clearByDateScript = @$"{ScriptsDirectory}\clear_database_by_date.py";
             var updateDataBaseScript = @$"{ScriptsDirectory}\update_database.py";
 
             var arg1 = $" {day:yyyy-MM-dd}";
             var arg2 = $" {ScriptsDirectory}";
 
             psi.UseShellExecute = false;
-
-            /*psi.Arguments = clearByDateScript + arg1 + arg2;
-            using Process clearProcess = Process.Start(psi);*/
-
+            
             psi.Arguments = updateDataBaseScript + arg1 + arg2;
             using Process updateProcess = Process.Start(psi)!;
         }

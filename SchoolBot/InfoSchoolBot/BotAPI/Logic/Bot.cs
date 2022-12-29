@@ -17,7 +17,6 @@ public class Bot : IBot
 {
     private readonly ITelegramBotClient bot;
     private readonly IBotManager botManager;
-    private readonly CancellationToken cancellationToken;
     private readonly ISendMessage messageSender;
     private readonly ILogger logger;
 
@@ -29,15 +28,14 @@ public class Bot : IBot
     {
         this.botManager = botManager;
         this.logger = logger;
-        cancellationToken = new CancellationTokenSource().Token;
         bot = new TelegramBotClient(configuration.GetValue<string>("BOT_API_TOKEN")!);
-        messageSender = new MessageSender(bot, cancellationToken);
+        messageSender = new MessageSender(bot);
         dbUpdateManager.ClearAndUpdateDb();
     }
 
     public void Run()
     {
-        var botName = bot.GetMeAsync(cancellationToken: cancellationToken).Result.FirstName;
+        var botName = bot.GetMeAsync().Result.FirstName;
         logger.LogInformation("Запущен бот {Name}", botName);
 
         var receiverOptions = new ReceiverOptions();
@@ -45,8 +43,7 @@ public class Bot : IBot
         bot.StartReceiving(
             HandleUpdateAsync,
             HandleErrorAsync,
-            receiverOptions,
-            cancellationToken
+            receiverOptions
         );
 
         Console.ReadLine();

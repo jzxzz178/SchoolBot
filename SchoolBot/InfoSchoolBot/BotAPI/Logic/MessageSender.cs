@@ -9,12 +9,10 @@ namespace SchoolBot.BotAPI.Logic;
 public class MessageSender : ISendMessage
 {
     private readonly ITelegramBotClient bot;
-    private readonly CancellationToken cancellationToken;
-
-    public MessageSender(ITelegramBotClient bot, CancellationToken cancellationToken)
+    
+    public MessageSender(ITelegramBotClient bot)
     {
         this.bot = bot;
-        this.cancellationToken = cancellationToken;
     }
 
     public async Task EditSentMessageAndMarkup(Message message, string textMessage, InlineKeyboardMarkup markup)
@@ -23,13 +21,11 @@ public class MessageSender : ISendMessage
             chatId: message.Chat.Id,
             messageId: message.MessageId,
             text: textMessage,
-            parseMode: ParseMode.Markdown,
-            cancellationToken: cancellationToken);
+            parseMode: ParseMode.Markdown);
 
         await bot.EditMessageReplyMarkupAsync(
             chatId: message.Chat.Id,
             messageId: message.MessageId,
-            cancellationToken: cancellationToken,
             replyMarkup: markup);
     }
 
@@ -37,8 +33,7 @@ public class MessageSender : ISendMessage
     {
         await bot.SendTextMessageAsync(
             chatId: chatId,
-            text: "Ой, что-то пошло не так... Повторите попытку",
-            cancellationToken: cancellationToken);
+            text: "Ой, что-то пошло не так... Повторите попытку");
     }
 
     public async Task SendTextMessage(ChatId chatId, string? text, IReplyMarkup? replyMarkup = null)
@@ -53,7 +48,6 @@ public class MessageSender : ISendMessage
             chatId: chatId,
             text: text,
             parseMode: ParseMode.Markdown,
-            cancellationToken: cancellationToken,
             replyMarkup: replyMarkup);
     }
 }
